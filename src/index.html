@@ -1,14 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>중간 프로젝트 템플릿</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
   <link rel="stylesheet" href="./index.scss">
 </head>
+
 <body>
-  <h1>중간 프로젝트 템플릿</h1>
+  <div class="container">
+    <header class="header">
+      <h1 class="logo">
+        <a href="#">
+          <img src="#" alt="#">
+        </a>
+      </h1>
+      <!-- member -->
+      <div class="tabs">
+        <ul class="member">
+          <li class="login">로그인</li>
+          <li class="join">회원가입</li>
+          <li class="basket">장바구니</li>
+        </ul>
+        <form class="search">
+          <input type="search" name="search" required placeholder="검색어를 입력하세요">
+          <button type="submit" class="search-btn">검색</button>
+        </form>
+      </div>
+    </header>
+    <!-- navigation -->
+
+    <nav class="navbar tabs">
+      <ul class="menu">
+        <li class="menu__list">
+          <sapn class="menu__item">top</sapn>
+        </li>
+        <li class="menu__list">
+          <sapn class="menu__item">bottom</sapn>
+        </li>
+        <li class="menu__list">
+          <sapn class="menu__item">outer</sapn>
+        </li>
+        <li class="menu__list">
+          <sapn class="menu__item">dress</sapn>
+        </li>
+        <li class="menu__list">
+          <sapn class="menu__item">acc</sapn>
+
+      </ul>
+    </nav>
+
+
+    <div class="root">
+
+
+
+    </div>
+    <!-- footer -->
+    <footer class="footer">
+      <address class="address">
+        <span>성남시 분당구 불곡남로</span>
+        <span>전화:
+          <a href="tel:010-1234-1234">101-1234-1234</a>
+        </span>
+        <span>이메일:
+          <a href="mailto:goosee115@gmail.com?subject=문의사항">goosee115@gmail.com</a>
+        </span>
+      </address>
+    </footer>
+
+
+    <!-- 회원가입 폼 template -->
+    <template id="join">
+      <form class="join__form">
+        <div class="field">
+          <p class="control has-icons-left has-icons-right">
+            <input class="input" name="username" type="text" placeholder="username">
+            <span class="icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+            <span class="icon is-small is-right">
+              <i class="fas fa-check"></i>
+            </span>
+          </p>
+        </div>
+        <div class="field">
+          <p class="control has-icons-left has-icons-right">
+            <input class="input" name="password" type="password" placeholder="Password">
+            <span class="icon is-small is-left">
+              <i class="fas fa-lock"></i>
+            </span>
+            <span class="icon is-small is-right">
+              <i class="fas fa-check"></i>
+            </span>
+          </p>
+        </div>
+        <div class="field">
+          <p class="control has-icons-left has-icons-right">
+            <input class="input" name="address" type="text" placeholder="address">
+            <span class="icon is-small is-left">
+              <i class="fas fa-address-book"></i>
+            </span>
+            <span class="icon is-small is-right">
+              <i class="fas fa-check"></i>
+            </span>
+          </p>
+        </div>
+        <div class="field">
+          <p class="control has-icons-left has-icons-right">
+            <input class="input" name="phone" type="tel" placeholder="cell phone number">
+            <span class="icon is-small is-left">
+              <i class="fas fa-mobile-alt"></i>
+            </span>
+            <span class="icon is-small is-right">
+              <i class="fas fa-check"></i>
+            </span>
+          </p>
+        </div>
+        <div class="field">
+          <p class="control">
+            <button class="button is-success" type="submit">
+              회원가입
+            </button>
+          </p>
+        </div>
+      </form>
+    </template>
+    <!-- 로그인 template -->
+    <template id="login">
+      <form class="login__form">
+        <div class="field">
+          <p class="control has-icons-left has-icons-right">
+            <input class="input" name="username" type="text" placeholder="username">
+            <span class="icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+            <span class="icon is-small is-right">
+              <i class="fas fa-check"></i>
+            </span>
+          </p>
+        </div>
+        <div class="field">
+          <p class="control has-icons-left has-icons-right">
+            <input class="input" name="password" type="password" placeholder="Password">
+            <span class="icon is-small is-left">
+              <i class="fas fa-lock"></i>
+            </span>
+            <span class="icon is-small is-right">
+              <i class="fas fa-check"></i>
+            </span>
+          </p>
+        </div>
+        <div class="field">
+          <p class="control">
+            <button class="button is-success" type="submit">
+              로그인
+            </button>
+          </p>
+        </div>
+        <form class="login__form">
+
+
+        </form>
+    </template>
+
+    <!-- 메인 화면 template -->
+    <template id="list">
+      <div class="columns">
+
+      </div>
+    </template>
+
+    <template id="item">
+      <div class="column is-3">
+        <div class="item__artist"></div>
+        <figure class="image is-128x128">
+          <img class="item__img" src="#">
+        </figure>
+        <div class="item__description">2번 째 앨범</div>
+        <div class="item__price">10000</div>
+        <div class="item__likeCount">2</div>
+
+      </div>
+    </template>
+
+    <!-- 카테고리별 화면 -->
+
+    <!-- 장바구니 -->
+    <!-- 주문내역 -->
+    <!-- 주문서 작성 / 주문 페이지 -->
+
+
+
+
+
+
+
+  </div>
+
+
+
+
+
+
+
+
+
   <script src="./index.js"></script>
 </body>
+
 </html>
