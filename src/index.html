@@ -25,7 +25,10 @@
         <ul class="member">
           <li class="login">로그인</li>
           <li class="join">회원가입</li>
-          <li class="basket">장바구니</li>
+          <li class="bag">장바구니</li>
+          <li class="myPage">마이페이지</li>
+
+          <li class="register">상품등록하기</li>
         </ul>
         <form class="search">
           <input type="search" name="search" required placeholder="검색어를 입력하세요">
@@ -38,27 +41,26 @@
     <nav class="navbar tabs">
       <ul class="menu">
         <li class="menu__list">
-          <sapn class="menu__item">top</sapn>
+          <sapn class="menu__item outer">outer</sapn>
         </li>
         <li class="menu__list">
-          <sapn class="menu__item">bottom</sapn>
+          <sapn class="menu__item top">top</sapn>
         </li>
         <li class="menu__list">
-          <sapn class="menu__item">outer</sapn>
+          <sapn class="menu__item bottom">bottom</sapn>
         </li>
         <li class="menu__list">
-          <sapn class="menu__item">dress</sapn>
+          <sapn class="menu__item dress">dress</sapn>
         </li>
         <li class="menu__list">
-          <sapn class="menu__item">acc</sapn>
+          <sapn class="menu__item acc">acc</sapn>
 
       </ul>
     </nav>
 
 
+    <h1 class="title">신상</h1>
     <div class="root">
-
-
 
     </div>
     <!-- footer -->
@@ -132,69 +134,102 @@
       </form>
     </template>
     <!-- 로그인 template -->
+
     <template id="login">
-      <form class="login__form">
-        <div class="field">
-          <p class="control has-icons-left has-icons-right">
-            <input class="input" name="username" type="text" placeholder="username">
-            <span class="icon is-small is-left">
-              <i class="fas fa-user"></i>
-            </span>
-            <span class="icon is-small is-right">
-              <i class="fas fa-check"></i>
-            </span>
-          </p>
-        </div>
-        <div class="field">
-          <p class="control has-icons-left has-icons-right">
-            <input class="input" name="password" type="password" placeholder="Password">
-            <span class="icon is-small is-left">
-              <i class="fas fa-lock"></i>
-            </span>
-            <span class="icon is-small is-right">
-              <i class="fas fa-check"></i>
-            </span>
-          </p>
-        </div>
-        <div class="field">
-          <p class="control">
-            <button class="button is-success" type="submit">
-              로그인
-            </button>
-          </p>
-        </div>
-        <form class="login__form">
+      <div class="modal is-active">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+          <!-- Any other Bulma elements you want -->
+          <form class="login__form">
+            <div class="field">
+              <p class="control has-icons-left has-icons-right">
+                <input class="input" name="username" type="text" placeholder="username">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-user"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fas fa-check"></i>
+                </span>
+              </p>
+            </div>
+            <div class="field">
+              <p class="control has-icons-left has-icons-right">
+                <input class="input" name="password" type="password" placeholder="Password">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-lock"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fas fa-check"></i>
+                </span>
+              </p>
+            </div>
+            <div class="field">
+              <p class="control">
+                <button class="button is-success" type="submit">
+                  로그인
+                </button>
+                <button class="button join-btn is-success">
+                  회원가입
+                </button>
+              </p>
+            </div>
+            <form class="login__form">
 
 
-        </form>
+            </form>
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+      </div>
     </template>
+
+
 
     <!-- 메인 화면 template -->
     <template id="list">
       <div class="columns">
-
       </div>
     </template>
 
     <template id="item">
       <div class="column is-3">
-        <div class="item__artist"></div>
         <figure class="image is-128x128">
-          <img class="item__img" src="#">
+          <img class="item__img" id="img" src="#">
         </figure>
         <div class="item__description">2번 째 앨범</div>
         <div class="item__price">10000</div>
         <div class="item__likeCount">2</div>
-
       </div>
     </template>
 
     <!-- 카테고리별 화면 -->
 
+
     <!-- 장바구니 -->
+    <template id="bag"></template>
     <!-- 주문내역 -->
     <!-- 주문서 작성 / 주문 페이지 -->
+    <!-- 상품 등록 페이지(관리자용) -->
+    <template id="regist">
+      <form class="regist__form">
+        <div class="select">
+          <select class="input" name="category">
+            <option value="outer">outer</option>
+            <option value="top">top</option>
+            <option value="bottom">bottom</option>
+            <option value="dress">dress</option>
+            <option value="acc">acc</option>
+          </select>
+        </div>
+        <input class="input" type="text" name="title" placeholder="등록하는 상품의 이름을 입력하세요.">
+        <input class="input" type="text" name="price" placeholder="등록하는 상품의 가격을 입력하세요.">
+        <input class="input" type="text" name="mainImg" placeholder="등록하는 상품의 메인 이미지 주소를 입력하세요.">
+        <textarea class="textarea" name="mainBody" placeholder="등록하는 상품의 메인 설명을 입력하세요."></textarea>
+        <input class="input" type="text" name="subImg" placeholder="등록하는 상품의 상세 이미지 주소를 입력하세요.">
+        <textarea class="textarea" name="subBody" placeholder="등록하는 상품의 상세 설명을 입력하세요."></textarea>
+        <button class="button" type="submit">상품등록</button>
+      </form>
 
+    </template>
 
 
 
