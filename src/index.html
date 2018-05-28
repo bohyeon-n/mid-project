@@ -198,16 +198,31 @@
         <div class="item__description">2번 째 앨범</div>
         <div class="item__price">10000</div>
         <div class="item__likeCount">2</div>
+        <button class="buying">구매하기</button>
+        <button class="inBag">장바구니담기</button>
       </div>
     </template>
-
-    <!-- 카테고리별 화면 -->
-
-
+    
+    <!-- 카테고리별 화면/메인화면으로 함--> 
+    
     <!-- 장바구니 -->
-    <template id="bag"></template>
+    <template id="bag">
+      <div class="columns">
+      <div class="column is-3">
+        <figure class="image is-128x128">
+          <img class="item__img" id="img" src="#">
+        </figure>
+      </div>
+      <div class="column is-4">
+        <div class="item__title">title</div>
+        <div class="item__quantity">quantity</div>
+        <div class="item__price">price</div>
+      </div>
+      </div>
+    </template>
     <!-- 주문내역 -->
     <!-- 주문서 작성 / 주문 페이지 -->
+
     <!-- 상품 등록 페이지(관리자용) -->
     <template id="regist">
       <form class="regist__form">

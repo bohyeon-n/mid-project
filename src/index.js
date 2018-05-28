@@ -10,7 +10,8 @@ const templates = {
   login: document.querySelector('#login').content,
   list: document.querySelector("#list").content,
   itemEl: document.querySelector("#item").content,
-  regist: document.querySelector('#regist').content
+  regist: document.querySelector('#regist').content,
+  bag: document.querySelector('#bag').content
 }
 
 function render(frag) {
@@ -83,6 +84,11 @@ formEl.addEventListener('submit', async e => {
   }
   const res = await mallAPI.post('/users/login',payload)
   login(res.data.token)
+  const idRes = await mallAPI.get(`users?username=${payload.username}`)
+  console.log(idRes)
+  console.log(payload.username)
+  console.log(`id: ${idRes.data[0].id}`)
+  localStorage.setItem('userId', idRes.data[0].id)
   document.querySelector(".login").textContent = "로그아웃"
   mainPage('/items')
 })
@@ -94,22 +100,34 @@ frag.querySelector(".join-btn").addEventListener('click', e => {
 })
 render(frag)
 }
+// 상품 메인 페이지 
 async function mainPage(url) {
   const listFrag = document.importNode(templates.list, true)
   const list = listFrag.querySelector('.columns')
   const res = await mallAPI.get(url)
-  for (const {artist, title, descriptions, price, likeCount} of res.data){
+  for (const {id, title, descriptions, price, likeCount} of res.data){
     const frag = document.importNode(templates.itemEl, true)
     frag.querySelector(".item__likeCount").textContent = likeCount
     frag.getElementById('img').src = descriptions[0].img
     frag.querySelector('.item__description').textContent = descriptions[0].body
     frag.querySelector('.item__price').textContent = price
+    frag.querySelector('.inBag').addEventListener('click', async e => {
+      const payload = {
+        itemId: id,
+        userId: localStorage.getItem('userId'),
+        quantity: 1,
+        created: "0513"
+      }
+      console.log(payload)
+      const res = await mallAPI.post('/bags',payload)
+    })
     list.appendChild(frag)   
+    // 장바구니 클릭 시 장바구니로 들어간다.
   }
   render(listFrag)
 }
 mainPage('/items')
-// 카테고리 클릭하면 카테고리별로 아이템이 나온다.  
+// 카테고리 클릭하면 카테고리별로 아이템이 나온다.  카테고리 페이지
 function title(title) {
   document.querySelector('.title').textContent = title
 }
@@ -134,7 +152,31 @@ document.querySelector('.acc').addEventListener('click', e => {
   mainPage('/items?category=acc')
 })
 
+// 장바구니 사용자의 장바구니를 보여준다.
 
+document.querySelector('.bag').addEventListener('click', e => {
+  bagPage()
+})
+
+async function bagPage() {
+  const listFrag = document.importNode(templates.list)
+  const res = await mallAPI.get(`/bags?userId=${localStorage.getItem('userId')}`)
+  console.log(res.data)
+  for(const {itemId, quantity, created} of res.data) {
+
+    const itemRes = await mallAPI.get(`/items?id=${itemId}`)
+    const frag = document.importNode(templates.bag, true)
+    console.log(itemRes.data)
+    frag.querySelector('.item__title').textContent = itemRes.data[0].title
+    console.log(itemRes.data[0].price)
+    frag.querySelector('.item__price').textContent = itemRes.data[0].price
+    frag.querySelector('.item__quantity').textContent = quantity
+    frag.querySelector('.item__img').src = itemRes.data[0].descriptions[0].img
+    listFrag.appendChild(frag)
+  }
+  title(`장바구니`)
+  render(listFrag)
+}
 
 // 로그인 로그아웃 버튼 체인지
 
