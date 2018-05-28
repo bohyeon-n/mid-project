@@ -11,7 +11,8 @@ const templates = {
   list: document.querySelector("#list").content,
   itemEl: document.querySelector("#item").content,
   regist: document.querySelector('#regist').content,
-  bag: document.querySelector('#bag').content
+  bag: document.querySelector('#bag').content,
+  totalPrice: document.querySelector('#totalPrice').content
 }
 
 function render(frag) {
@@ -159,23 +160,29 @@ document.querySelector('.bag').addEventListener('click', e => {
 })
 
 async function bagPage() {
-  const listFrag = document.importNode(templates.list)
+  const listFrag = document.importNode(templates.list,true)
   const res = await mallAPI.get(`/bags?userId=${localStorage.getItem('userId')}`)
   console.log(res.data)
+  let totalPrice = 0;
   for(const {itemId, quantity, created} of res.data) {
-
     const itemRes = await mallAPI.get(`/items?id=${itemId}`)
     const frag = document.importNode(templates.bag, true)
     console.log(itemRes.data)
     frag.querySelector('.item__title').textContent = itemRes.data[0].title
     console.log(itemRes.data[0].price)
+    totalPrice += Number(itemRes.data[0].price)
     frag.querySelector('.item__price').textContent = itemRes.data[0].price
     frag.querySelector('.item__quantity').textContent = quantity
     frag.querySelector('.item__img').src = itemRes.data[0].descriptions[0].img
     listFrag.appendChild(frag)
   }
+  console.log(totalPrice)
   title(`장바구니`)
+  const totalFrag = document.importNode(templates.totalPrice, true)
+  totalFrag.querySelector('.total').textContent = totalPrice
+  listFrag.appendChild(totalFrag)
   render(listFrag)
+
 }
 
 // 로그인 로그아웃 버튼 체인지
