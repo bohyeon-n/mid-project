@@ -14,7 +14,10 @@ const templates = {
   bag: document.querySelector('#bag').content,
   totalPrice: document.querySelector('#totalPrice').content,
   order: document.querySelector('#order').content,
-  orderItem: document.querySelector("#orderItem").content
+  orderItem: document.querySelector("#orderItem").content,
+  detail: document.querySelector('#detail').content,
+  detailBody: document.querySelector('#detailBody').content,
+  toBag: document.querySelector("#goToBag").content
 }
 
 function render(frag) {
@@ -112,7 +115,40 @@ async function mainPage(url) {
     const frag = document.importNode(templates.itemEl, true)
     frag.querySelector('.item__title').textContent = title
     frag.querySelector(".item__likeCount").textContent = likeCount
-    frag.getElementById('img').src = descriptions[0].img
+    frag.querySelector('.item__img').src = descriptions[0].img
+
+    frag.querySelector('.image').addEventListener('click', e => {
+      detailPage(id, title, descriptions, price)
+    })
+
+    // 디테일 페이지 
+async function detailPage(id, title, descriptions, price) {
+  const frag = document.importNode(templates.detail, true)
+  frag.querySelector('.item__img').src = descriptions[0].img
+  frag.querySelector('.item__title').textContent = title
+  frag.querySelector('.item__price').textContent = price
+  const detail = frag.querySelector(".item__detail")
+  for (const {img, body} of descriptions) {
+    const detailFrag = document.importNode(templates.detailBody, true)
+    detailFrag.querySelector('.detail__img').src = img
+    detailFrag.querySelector('.detail__body').textContent = body
+    detail.appendChild(detailFrag)
+  }
+  frag.querySelector('.inBag').addEventListener('click', async e => {
+    const payload = {
+      itemId: id,
+      userId: localStorage.getItem('userId'),
+      quantity: 1,
+      created: new Date()
+    }
+    const res = await mallAPI.post('/bags',payload)
+    goToBag()
+  })
+  
+  render(frag)
+  
+    console.log(title, descriptions, price)
+  }
     // frag.querySelector('.item__description').textContent = descriptions[0].body
     frag.querySelector('.item__price').textContent = price
 
@@ -130,13 +166,30 @@ async function mainPage(url) {
   }
   render(listFrag)
 }
+
 mainPage('/items')
 
+function goToBag() {
+  const frag = document.importNode(templates.toBag, true)
+  const notification = frag.querySelector('.notification')
+  frag.querySelector('.toBag').addEventListener('click', e => {
+    bagPage()
+  })
+  frag.querySelector('.continue').addEventListener('click', e => {
+    rootEl.removeChild(notification)
+  })
+  frag.querySelector('.delete').addEventListener('click', e => {
+    rootEl.removeChild(notification)
+  })
+
+  rootEl.appendChild(frag)
+}
 //카테고리 페이지 
 // 카테고리 클릭하면 카테고리별로 아이템이 나온다.
 function title(title) {
   document.querySelector('.title').textContent = title
 }
+
 document.querySelector('.outer').addEventListener('click', e => {
   title('outer')
   mainPage('/items?category=outer')
@@ -245,8 +298,9 @@ async function orderPage( res, item, totalPrice) {
     render(frag)
 }
 
-// 로그인 로그아웃 버튼 체인지
 
+
+// 로그인 로그아웃 버튼 체인지
 // if(localStorage.getItem('token')) {
 //   document.querySelector('.login').textContent = "로그아웃"
 //   mainPage()

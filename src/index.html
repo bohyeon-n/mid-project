@@ -193,7 +193,7 @@
     <template id="item">
       <div class="column is-3">
         <figure class="image is-32x32">
-          <img class="item__img" id="img" src="#">
+          <img class="item__img img" src="#">
         </figure>
         <div class="item__title">좋은옷</div>
         <div class="item__price">10000</div>
@@ -211,6 +211,32 @@
     </template>
 
     <!-- 카테고리별 화면/메인화면으로 함-->
+    <!-- 상품 상세페이지 -->
+    <template id="detail">
+      <figure class="image is-32x32">
+        <img class="item__img" id="img" src="#">
+      </figure>
+      <div class="item__title"></div>
+      <div class="item__price"></div>
+      <button class="buying">구매하기</button>
+      <button class="inBag">장바구니담기</button>
+      <div class="item__detail"></div>
+    </template>
+
+    <template id="detailBody">
+      <img src="#" class="detail__img image is-1by1">
+      <div class="detail__body"></div>
+    </template>
+
+    <!-- 장바구니로 이동할건지, 계속 쇼핑할건지 -->
+    <template id="goToBag">
+      <div class="notification">
+        <button class="delete"></button>
+        장바구니로 이동하시겠습니까?
+        <button type="button" class="toBag button">장바구니로 이동</button>
+        <button type="button" class="continue button">쇼핑계속 하기</button>
+      </div>
+    </template>
 
     <!-- 장바구니 -->
     <template id="bag">
@@ -248,7 +274,7 @@
 
     <template id="orderItem">
       <div class="columns">
-        
+
         <img class="item__img  image is-32x32" src="#">
         <div class="item__title column is-3"></div>
         <div class="item__quantity column is-3"></div>
