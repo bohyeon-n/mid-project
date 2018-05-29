@@ -73,9 +73,9 @@ render(frag)
 document.querySelector('.login').addEventListener('click', e => {
   if(!(localStorage.getItem('token'))) {
     loginPage()
-  }else {
+  } else {
     logout()
-    document.querySelector('.login').textContent="로그아웃"
+    document.querySelector('.login').textContent="로그인"
   }
 })
 
@@ -90,6 +90,7 @@ formEl.addEventListener('submit', async e => {
   }
   const res = await mallAPI.post('/users/login',payload)
   login(res.data.token)
+  // document.querySelector('.login').textContent="로그아웃"
   const idRes = await mallAPI.get(`users?username=${payload.username}`)
   console.log(idRes)
   console.log(payload.username)
@@ -299,15 +300,13 @@ async function orderPage( res, item, totalPrice) {
 }
 
 
+// 새로고침 할 때 로그인했는지 안했는지 보기 
 
-// 로그인 로그아웃 버튼 체인지
-// if(localStorage.getItem('token')) {
-//   document.querySelector('.login').textContent = "로그아웃"
-//   mainPage()
-// } else {
-//   document.querySelector('.login').textContent = "로그인"
-//   mainPage()
-// }
+if(localStorage.getItem('token')) {
+  document.querySelector('.login').textContent = "로그아웃"
+} else {
+  document.querySelector('.login').textContent = "로그인"
+}
 // 상품등록 임시로 만들기 
 document.querySelector('.register').addEventListener('click', e => {
   regist()
