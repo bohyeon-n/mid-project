@@ -146,6 +146,8 @@
         <div class="modal-background"></div>
         <div class="modal-content">
           <!-- Any other Bulma elements you want -->
+          <div class="login__alert title"></div>
+          <div class="login__message title">아이디와 비빌번호를 입력해주세요.</div>
           <form class="login__form">
             <div class="field">
               <p class="control has-icons-left has-icons-right">
@@ -194,13 +196,13 @@
 
     <!-- 메인 화면 template -->
     <template id="list">
-      <div class="columns">
+      <div class="columns list__columns">
       </div>
     </template>
 
     <template id="item">
       <div class="column is-3">
-        <figure class="image is-32x32">
+        <figure class="image">
           <img class="item__img img" src="#">
         </figure>
         <div class="item__title">좋은옷</div>
@@ -278,24 +280,24 @@
 
     <!-- 주문내역 -->
     <template id="orderHistory">
-      <div class="tile is-ancestor">
-        <div class="tile is-4 is-vertical is-parent">
-          <div class="tile is-parent">
-            <div class="tile is-child box">
-              <p class="title">Three</p>
-            </div>
-          </div>
-          <div class="tile is-child box">
-            <p class="title">One</p>
-          </div>
-          <div class="tile is-child box">
-            <p class="title">Two</p>
-          </div>
-        </div>
+      <div class="box">
       </div>
     </template>
 
-
+    <template id="historyItem">
+      <div class="level">
+        <div class="level-left">
+          <figure class="image is-128x128">
+            <img class="itemImg" src="#">
+          </figure>
+        </div>
+        <div class="level-right">
+          <div class="level-item date">date</div>
+          <div class="level-item title">title</div>
+          <div class="level-item total">total</div>
+        </div>
+      </div>
+    </template>
     <!-- 주문서 작성 / 주문 페이지 -->
     <template id="order">
       <div class="subtitle">주문 상품</div>

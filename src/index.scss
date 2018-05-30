@@ -6,3 +6,15 @@
   left: 50vh;
   
 }
+
+.list__columns {
+  flex-wrap: wrap;
+}
+.login {
+  &__alert {
+    color: white;
+  }
+  &__message {
+    color: white;
+  }
+}
