@@ -18,8 +18,10 @@ const templates = {
   detail: document.querySelector("#detail").content,
   detailBody: document.querySelector("#detailBody").content,
   toBag: document.querySelector("#goToBag").content,
-  orderHistories: document.querySelector("#orderHistory").content,
-  historyItem: document.querySelector("#historyItem").content
+  myPage: document.querySelector("#myPage").content,
+  myPageItem: document.querySelector("#myPageItem").content,
+  orderHistory: document.querySelector('#orderHistory').content,
+  orderHistoryItem: document.querySelector('#orderHistoryItem').content
 };
 
 function render(frag) {
@@ -315,9 +317,10 @@ async function bagPage() {
   render(listFrag);
 }
 
-// 주문 페이지
+// 주문 페이지 (장바구니에서 주문했을 시에 )
 async function orderPage(res, item, totalPrice) {
-  console.log("res: " + res);
+  console.log("res: " + res[0].id); 
+  console.log("res: " + res[1].id);
   console.log("item: " + item);
   console.log("totalprice: " + totalPrice);
   const frag = document.importNode(templates.order, true);
@@ -344,6 +347,15 @@ async function orderPage(res, item, totalPrice) {
       items: item
     };
     const orderRes = await mallAPI.post("/orderHistories", payload);
+
+    //주문 완료 시 장바구니 비워주기 
+    
+    for (const {id} of res) {
+      await mallAPI.delete(`/bags/${id}`)
+    }
+
+
+
     mainPage();
   });
   frag.querySelector(".order__total").textContent = totalPrice;
@@ -351,28 +363,60 @@ async function orderPage(res, item, totalPrice) {
   render(frag);
 }
 document.querySelector(".myPage").addEventListener("click", e => {
-  orderHistoriesPage();
+  myPage();
 });
 // 주문내역확인 페이지
-async function orderHistoriesPage() {
-  const frag = document.importNode(templates.orderHistories, true);
+async function myPage() {
+  const frag = document.importNode(templates.myPage, true);
   const res = await mallAPI.get(
     `/orderHistories?userId=${localStorage.getItem("userId")}`
   );
-  for ({ name, created, total, items, total } of res.data) {
-    const itemFrag = document.importNode(templates.historyItem, true);
+  console.log(`여기여기${res.data[0].address}`)
+  console.log(`여기여기${res.data[1].address}`)
+  console.log(`여기여기${res.data[2].address}`)
+  console.log(`여기여기${res.data[3].address}`)
+  console.log(`여기여기${res.data[4].address}`)
+  for (const { name, created, total, items, id, address, tel } of res.data) {
+    const itemFrag = document.importNode(templates.myPageItem, true);
     itemFrag.querySelector(".itemImg").src = items[0].itemImg;
     itemFrag.querySelector(".date").textContent = created;
     itemFrag.querySelector(".title").textContent = `${
       items[0].title
     } 외 ${items.length - 1}개 주문하셨습니다.`;
     itemFrag.querySelector(".total").textContent = total;
+    // 주문 상세페이지 
+    itemFrag.querySelector('.title').addEventListener('click', e => {
+      console.log(res.data)
+
+      orderHistoryPage(name, created, total, items, id, address, tel)
+      console.log(`sldjflskdnfl:${items[0].created}`)
+    })
     frag.appendChild(itemFrag);
   }
+
   render(frag);
   title("주문 내역 확인");
 }
 
+async function orderHistoryPage(name, created, total, items, id, address, tel) {
+    console.log(address)
+    const frag = document.importNode(templates.orderHistory, true)
+    frag.querySelector('.date').textContent = created
+    frag.querySelector('.total').textContent = total
+    frag.querySelector('.name').textContent = name
+    frag.querySelector('.address').textContent = address
+    frag.querySelector('.phone').textContent = tel
+    const fragList = frag.querySelector('.orderHistories__list')
+    for(let i = 0; i < items.length; i++) {
+      const itemFrag = document.importNode(templates.orderHistoryItem, true)
+      itemFrag.querySelector('.image').src = items[i].itemImg
+      itemFrag.querySelector('.title').textContent = items[i].title
+      itemFrag.querySelector('.quantity').textContent = items[i].quantity
+      itemFrag.querySelector('.price').textContent = items[i].price
+      fragList.appendChild(itemFrag)
+    }
+    render(frag)
+}
 // 새로고침 할 때 로그인했는지 안했는지 보기
 if (localStorage.getItem("token")) {
   document.querySelector(".login").textContent = "로그아웃";
