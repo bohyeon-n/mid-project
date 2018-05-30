@@ -1,0 +1,29 @@
+<!-- 장바구니로 이동할건지, 계속 쇼핑할건지 -->
+<template id="goToBag">
+  <div class="notification">
+    <button class="delete"></button>
+    장바구니로 이동하시겠습니까?
+    <button type="button" class="toBag button">장바구니로 이동</button>
+    <button type="button" class="continue button">쇼핑계속 하기</button>
+  </div>
+</template>
+
+
+
+
+<!-- 장바구니 -->
+<template id="bag">
+  <div class="columns">
+    <div class="column is-3">
+      <figure class="image is-32x32">
+        <img class="item__img" id="img" src="#">
+      </figure>
+    </div>
+    <div class="column is-4">
+      <div class="item__title">title</div>
+      <div class="item__quantity">quantity</div>
+      <div class="item__price">price</div>
+      <button class="delete">삭제하기</button>
+    </div>
+  </div>
+</template>
