@@ -110,13 +110,34 @@ async function detailPage(id, title, descriptions, price) {
     detail.appendChild(detailFrag);
   }
   frag.querySelector(".inBag").addEventListener("click", async e => {
-    const payload = {
-      itemId: id,
-      userId: localStorage.getItem("userId"),
-      quantity: 1,
-      created: new Date()
-    };
-    const res = await mallAPI.post("/bags", payload);
+    const itemRes = await mallAPI.get(
+      `/bags?userId=${localStorage.getItem(`userId`)}`
+    );
+    console.log(itemRes.data[0].itemId);
+    console.log(itemRes.data)
+
+    // 하나라도 같은 아이템이 있다면 트루, 패치 요청을 보내준다. 아니라면 포스트 요청을 보낸다.
+    console.log(`id: ${id}`)
+
+    const filter = itemRes.data.filter(element => element.itemId === id)
+    if (filter) {
+      console.log('같은 아이템이 이미 장바구니에 있다. ')
+      console.log(filter[0].quantity)
+      const itemPayload = {
+        quantity: ++ filter[0].quantity
+      };
+       console.log(itemPayload)
+      const res = await mallAPI.patch(`bags/${filter[0].id}`, itemPayload);
+    } else {
+      const payload = {
+        itemId: id,
+        userId: localStorage.getItem("userId"),
+        quantity: 1,
+        created: new Date()
+      };
+      const res = await mallAPI.post("/bags", payload);
+    }
+    // 요청을 보낸 후에는 장바구니로 이동할건지 물어본다. 
     goToBag();
   });
 
@@ -209,68 +230,59 @@ document.querySelector(".acc").addEventListener("click", e => {
 });
 
 // 장바구니 사용자의 장바구니를 보여준다.
+
 document.querySelector(".bag").addEventListener("click", e => {
   bagPage();
 });
-// 장바구니페이지
+
 async function bagPage() {
-  const listFrag = document.importNode(templates.list, true);
-  const res = await mallAPI.get(
-    `/bags?userId=${localStorage.getItem("userId")}`
-  );
-  let totalPrice = 0;
-  const item = [];
+  const listFrag = document.importNode(templates.list,true)
+  const res = await mallAPI.get(`/bags?userId=${localStorage.getItem('userId')}`)
+  let totalPrice = 0
+  const item = []
   if (res.data.length === 0) {
-    alert("장바구니에 담긴 상품이 없습니다.");
+    alert('장바구니에 담긴 상품이 없습니다.')
   } else {
-    const requestPromises = [];
-    const itemResponses = [];
-
-    for (const { id, itemId, quantity, created } of res.data) {
-      requestPromises.push(mallAPI.get(`/items?id=${itemId}`));
-    }
-
-    await axios.all(requestPromises).then(results => {
-      results.forEach(itemRes => {
-        item.push({
-          title: itemRes.data[0].title,
-          itemImg: itemRes.data[0].descriptions[0].img,
-          itemId: itemRes.data[0].id,
-          price: itemRes.data[0].price,
-          quantity: 1
-        });
-      });
-    });
-    title(`장바구니`);
-
-    const itemFrags = item.map(x => {
-      const frag = document.importNode(templates.bag, true);
-      frag.querySelector(".item__title").textContent = x.title;
-      totalPrice += Number(x.price);
-      frag.querySelector(".item__price").textContent = x.price;
-      frag.querySelector(".item__quantity").textContent = x.quantity;
-      frag.querySelector(".item__img").src = x.itemImg;
-      frag.querySelector(".delete").addEventListener("click", async e => {
-        const res = await mallAPI.delete(`/bags/${x.itemId}`);
-        bagPage();
-      });
-
-      return frag;
-    });
-
-    itemFrags.forEach(x => listFrag.appendChild(x));
-
-    // 합계 보여줌
-    const totalFrag = document.importNode(templates.totalPrice, true);
-    totalFrag.querySelector(".total").textContent = totalPrice;
-    totalFrag.querySelector(".buy").addEventListener("click", e => {
-      orderPage(res.data, item, totalPrice);
-    });
-
-    listFrag.appendChild(totalFrag);
+  for(const {id,itemId, quantity, created} of res.data) {
+    const itemRes = await mallAPI.get(`/items?id=${itemId}`)
+    item.push({
+      title: itemRes.data[0].title,
+      itemImg: itemRes.data[0].descriptions[0].img,
+      itemId: id,
+      price: itemRes.data[0].price,
+      quantity: quantity
+    })
+    const frag = document.importNode(templates.bag, true)
+    frag.querySelector('.item__title').textContent = itemRes.data[0].title
+    totalPrice += Number(itemRes.data[0].price*quantity)
+    frag.querySelector('.item__price').textContent = itemRes.data[0].price
+    frag.querySelector('.item__quantity').textContent = quantity
+    frag.querySelector('.item__totalPrice').textContent = quantity*itemRes.data[0].price
+    frag.querySelector('.item__img').src = itemRes.data[0].descriptions[0].img
+    frag.querySelector('.delete').addEventListener('click', async e => {
+      const res = await mallAPI.delete(`/bags/${id}`)
+      bagPage()
+    })
+    listFrag.appendChild(frag)
+    
   }
-  render(listFrag);
+  title(`장바구니`)
+  // 합계 보여줌 
+  const totalFrag = document.importNode(templates.totalPrice, true)
+  totalFrag.querySelector('.total').textContent = totalPrice
+  totalFrag.querySelector('.buy').addEventListener('click', e => {
+    orderPage(res.data, item, totalPrice)
+    console.log(res.data)
+    console.log(item)
+    console.log(totalPrice)
+  })
+
+  listFrag.appendChild(totalFrag)
 }
+  render(listFrag)
+
+}
+
 // 주문 페이지
 async function orderPage(res, item, totalPrice) {
   console.log("res: " + res);
