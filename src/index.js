@@ -241,8 +241,24 @@ async function mainPage(category = "all", sort = "id", order = "desc") {
   for (const { id, title, descriptions, price, likeCount } of res.data) {
     const frag = document.importNode(templates.itemEl, true);
     frag.querySelector(".item__title").textContent = title;
-    frag.querySelector(".item__likeCount").textContent = likeCount;
     frag.querySelector(".item__img").src = descriptions[0].img;
+    frag.querySelector('.like').addEventListener('click', async e => {
+      console.log('sldkfj')
+      const userId = localStorage.getItem('userId')
+      const res = await mallAPI.get(`/likes?userId=${userId}&itemId=${id}`)
+       if(res.data.length === 0) {
+         const payload = {
+           userId: userId,
+           itemId: id,
+           created: new Date()
+         }
+         const patchPayload = {
+           likeCount: likeCount + 1
+         }
+         const likesRes = await mallAPI.post('/likes', payload)
+         const likeCountRes = await mallAPI.patch(`items/${id}`, patchPayload)
+       } 
+    })
     frag.querySelector(".image").addEventListener("click", e => {
       detailPage(id, title, descriptions, price);
     });
