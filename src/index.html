@@ -304,13 +304,55 @@
       <div class="column is-4">
         <button class="delete">삭제하기</button>
         <div class="align">
-          <div class="titl">title</div>
-          <div class="item__title">title</div>
+          <table>
+            <tr>
+              <td><div class="titl">상품: </div></td>
+              <td><div class="item__title">title</div></td>
+            </tr>
+          </table>
 
         </div>
-        <div class="item__quantity">quantity</div>
-        <div class="item__price">price</div>
-        <div class="item__totalPrice">total</div>
+        <form name="changeQuantity">
+          <table>
+
+            <tr>
+              <td>수량: </td>
+              <td>
+                <input type="text" class="item__quantity" name="count" value="">
+                <td>
+                  <a class="up" href="#">
+                    <i class="fas fa-caret-up"></i>
+                  </a>
+                  <a class="down" href="#">
+                    <i class="fas fa-caret-down"></i>
+                  </a>
+                </td>
+              </td>
+            </tr>
+          </table>
+
+        </form>
+      <table>
+        <tr>
+          <td>
+          <div class="price__title">가격: </div>  
+          </td>
+          <td>
+            
+            <div class="item__price">price</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <div class="totalPrice__title">합계: </div>  
+          </td>
+          <td>
+            
+          <div class="item__totalPrice">total</div>
+          </td>
+        </tr>
+      </table>
+       
       </div>
     </div>
   </template>
