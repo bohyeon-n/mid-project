@@ -140,8 +140,9 @@ async function isOverlapItem(id) {
   goToBag();
 }
 
-// 장바구니에 담지 않고 바로구매했을 시에 함수
+// 장바구니에 담지 않고 바로구매했을 시에 바로구매 함수
 async function buyNow(id, title, descriptions, price) {
+
   const frag = document.importNode(templates.order, true);
   const fragItem = document.importNode(templates.orderItem, true);
   const orderList = frag.querySelector(".order-list");
@@ -152,6 +153,31 @@ async function buyNow(id, title, descriptions, price) {
   fragItem.querySelector(".item__quantity").textContent = 1;
   orderList.appendChild(fragItem);
   frag.querySelector(".order__total").textContent = price;
+  const item = [
+    {
+      title: title,
+      itemId: id,
+      itemImg: descriptions[0].img,
+      price: price,
+      quantity: 1
+    }
+  ];
+  frag.querySelector(".order__form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const payload = {
+      name: e.target.elements.name.value,
+      address: e.target.elements.address.value,
+      tel: e.target.elements.tel.value,
+      request: e.target.elements.request.value,
+      created: new Date(),
+      userId: localStorage.getItem("userId"),
+      total: price,
+      items: item
+    };
+    const orderRes = await mallAPI.post("/orderHistories", payload);
+
+    myPage();
+  });
   render(frag);
 }
 
@@ -294,15 +320,14 @@ async function bagPage() {
       // 수량조정하기 버튼 클릭 시에 input value 바꿔주고, 통신해서 quantity patch요청보내기
       const frag = document.importNode(templates.bag, true);
       const quantityEl = frag.querySelector(".item__quantity");
-      const upEl = frag.querySelector('.up')
-      const downEl = frag.querySelector('.down')
+      const upEl = frag.querySelector(".up");
+      const downEl = frag.querySelector(".down");
       upEl.addEventListener("click", async e => {
         const payload = {
           quantity: ++quantity
         };
         const res = await mallAPI.patch(`/bags/${id}`, payload);
-        bagPage()
-  
+        bagPage();
       });
       downEl.addEventListener("click", async e => {
         if (quantity >= 1) {
@@ -311,7 +336,7 @@ async function bagPage() {
           };
           const res = await mallAPI.patch(`/bags/${id}`, payload);
         }
-        bagPage()
+        bagPage();
       });
 
       frag.querySelector(".item__title").textContent = itemRes.data[0].title;
@@ -344,9 +369,6 @@ async function bagPage() {
 
 // 주문 페이지 (장바구니에서 주문했을 시에 )
 async function orderPage(res, item, totalPrice) {
-  console.log("res: " + res[0].id);
-  console.log("res: " + res[1].id);
-  console.log("item: " + item);
   console.log("totalprice: " + totalPrice);
   const frag = document.importNode(templates.order, true);
   const orderList = frag.querySelector(".order-list");
@@ -379,7 +401,7 @@ async function orderPage(res, item, totalPrice) {
       await mallAPI.delete(`/bags/${id}`);
     }
 
-    mainPage();
+    myPage();
   });
   frag.querySelector(".order__total").textContent = totalPrice;
   title("주문페이지");
@@ -394,31 +416,30 @@ async function myPage() {
   const res = await mallAPI.get(
     `/orderHistories?userId=${localStorage.getItem("userId")}`
   );
-  console.log(`여기여기${res.data[0].address}`);
-  console.log(`여기여기${res.data[1].address}`);
-  console.log(`여기여기${res.data[2].address}`);
-  console.log(`여기여기${res.data[3].address}`);
-  console.log(`여기여기${res.data[4].address}`);
-  for (const { name, created, total, items, id, address, tel } of res.data) {
-    const itemFrag = document.importNode(templates.myPageItem, true);
-    itemFrag.querySelector(".itemImg").src = items[0].itemImg;
-    itemFrag.querySelector(".date").textContent = created;
-    itemFrag.querySelector(".title").textContent = `${
-      items[0].title
-    } 외 ${items.length - 1}개 주문하셨습니다.`;
-    itemFrag.querySelector(".total").textContent = total;
-    // 주문 상세페이지
-    itemFrag.querySelector(".title").addEventListener("click", e => {
-      console.log(res.data);
+  console.log(res.data.length);
+  if (res.data.length === 0) {
+    frag.querySelector(".mypage__message").textContent =
+      "주문하신 상품이 없습니다.";
+  } else {
+    for (const { name, created, total, items, id, address, tel } of res.data) {
+      const itemFrag = document.importNode(templates.myPageItem, true);
+      itemFrag.querySelector(".itemImg").src = items[0].itemImg;
+      itemFrag.querySelector(".date").textContent = created;
+      itemFrag.querySelector(".title").textContent = `${
+        items[0].title
+      } 외 ${items.length - 1}개 주문하셨습니다.`;
+      itemFrag.querySelector(".total").textContent = total;
+      // 주문 상세페이지
+      itemFrag.querySelector(".title").addEventListener("click", e => {
+        console.log(res.data);
 
-      orderHistoryPage(name, created, total, items, id, address, tel);
-      console.log(`sldjflskdnfl:${items[0].created}`);
-    });
-    frag.appendChild(itemFrag);
+        orderHistoryPage(name, created, total, items, id, address, tel);
+      });
+      frag.appendChild(itemFrag);
+    }
   }
-
   render(frag);
-  title("주문 내역 확인");
+  title("마이페이지");
 }
 
 async function orderHistoryPage(name, created, total, items, id, address, tel) {
