@@ -256,13 +256,21 @@
 
   <!-- 상품 상세페이지 -->
   <template id="detail">
-    <figure class="image is-32x32">
-      <img class="item__img" id="img" src="#">
-    </figure>
-    <div class="item__title"></div>
-    <div class="item__price"></div>
-    <button class="buying">구매하기</button>
-    <button class="inBag">장바구니담기</button>
+    <div class="box level detail">
+      <div class="level-right">
+        <figure class="image main__img">
+          <img class="item__img" id="img" src="#">
+        </figure>
+
+      </div>
+      <div class="level-left">
+        <div class="item__title"></div>
+        <div class="item__price"></div>
+      </div>
+      <button class="buying">구매하기</button>
+      <button class="inBag">장바구니담기</button>
+
+    </div>
     <div class="item__detail"></div>
   </template>
 
@@ -313,16 +321,20 @@
   <template id="myPage">
   </template>
   <template id="myPageItem">
-    <div class="level box">
+    <div class="level box myPage__box">
       <div class="level-left">
         <figure class="image myPage__img ">
           <img class="itemImg " src="#">
         </figure>
       </div>
       <div class="level-right">
-        <div class="level-item date">date</div>
-        <div class="level-item title">title</div>
-        <div class="level-item total">total</div>
+        <div class="myPage-align">
+          <div class="level-item date">date</div>
+          <div>
+
+            <a class="level-item title subtitle">title</div>
+          <div class="level-item total">total</div>
+        </div>
       </div>
     </div>
   </template>
