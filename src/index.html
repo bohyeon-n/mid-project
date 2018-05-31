@@ -86,6 +86,7 @@
 
     <div class="container">
       <h1 class="title"></h1>
+ 
 
       <div class="root">
 
@@ -203,8 +204,15 @@
 
 
   <!-- 메인 화면 template -->
+
   <template id="list">
     <div class="alert"></div>
+      
+      <button class="latest">최신순</button>
+      <button class="sortedPriceAsc">낮은가격순</button>
+      <button class="sortedPriceDesc">높은가격순</button>
+      <button class="bestAsc">인기순</button>
+
     <div class="columns list__columns">
     </div>
   </template>
@@ -452,11 +460,13 @@
       <td class="item-stock">
         <div class="control">
           <label class="radio">
-            <input type="radio" name="answer"> Yes
+            <form class="stock">
+              <input type="radio" name="answer" value="true"> Yes
           </label>
           <label class="radio">
-            <input type="radio" name="answer"> No
+            <input type="radio" name="answer" value="false"> No
           </label>
+          </form>
         </div>
       </td>
     </tr>

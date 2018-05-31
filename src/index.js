@@ -30,6 +30,7 @@ function render(frag) {
   rootEl.textContent = "";
   rootEl.appendChild(frag);
 }
+
 async function login(token) {
   localStorage.setItem("token", token);
   mallAPI.defaults.headers["Authorization"] = `Bearer ${token}`;
@@ -55,8 +56,11 @@ document.querySelector(".member__login").addEventListener("click", e => {
 document.querySelector(".member__logout").addEventListener("click", e => {
   logout();
 });
-//에러인지 확인하는 로직
-
+// 새로고침 시에 로그인 했는지 확인하는 
+if(localStorage.getItem('token')) {
+  const token = localStorage.getItem('token')
+  login(token)
+}
 // 회원가입
 document.querySelector(".member__join").addEventListener("click", e => {
   joinPage();
@@ -74,7 +78,7 @@ async function joinPage() {
 
     const res = await mallAPI.post("/users/register", payload).then(
       response => {
-        login(respose.data.token);
+        login(response.data.token);
         mainPage();
       },
       error => {
@@ -102,16 +106,14 @@ async function loginPage(arg) {
     };
     const res = await mallAPI.post("/users/login", payload).then(
       response => {
-        login(respose.data.token);
+        login(response.data.token);
         mainPage();
       },
       error => {
         alert("로그인 정보가 맞지 않습니다. 다시 입력해주세요.");
         loginPage();
       }
-    );
-
-    login(res.data.token);
+    )
     // const idRes = await mallAPI.get(`users?username=${payload.username}`);
     // localStorage.setItem("userId", idRes.data[0].id);
     mainPage();
@@ -214,15 +216,27 @@ async function detailPage(id, title, descriptions, price) {
 }
 
 // 상품 메인 페이지
-async function mainPage(category = "all") {
+async function mainPage(category = "all", sort = "id", order = "desc") {
   const listFrag = document.importNode(templates.list, true);
   const list = listFrag.querySelector(".columns");
-  let url = "/items?_sort=id&_order=desc";
+  let url = `items?_sort=${sort}&_order=${order}`;
   if (category !== "all") {
-    url = `items?category=${category}&_sort=id&_order=desc`;
+    url = `items?category=${category}&_sort=${sort}&_order=${order}`;
   } else {
     title("new arrival");
   }
+  listFrag.querySelector('.latest').addEventListener('click', async e => {
+    mainPage(category = `${category}`)
+  })
+  listFrag.querySelector('.sortedPriceAsc').addEventListener('click', async e => {
+    mainPage(category = `${category}`, sort="price", order="asc")
+  })
+  listFrag.querySelector('.sortedPriceDesc').addEventListener('click', async e => {
+    mainPage(category= `${category}`, sort="price", order="desc")
+  })
+  listFrag.querySelector('.bestAsc').addEventListener('click', async e => {
+    mainPage(category= `${category}`, sort="likeCount", order="asc")
+  })
   const res = await mallAPI.get(url);
   for (const { id, title, descriptions, price, likeCount } of res.data) {
     const frag = document.importNode(templates.itemEl, true);
@@ -486,6 +500,7 @@ async function addItem() {
 
   render(frag);
 }
+
 async function editItem(id, title, price, descriptions, category) {
   const frag = document.importNode(templates.regist, true);
 
@@ -496,7 +511,6 @@ async function editItem(id, title, price, descriptions, category) {
   frag.querySelector(".mainBody").value = descriptions[0].body;
   frag.querySelector(".subImg").value = descriptions[1].img;
   frag.querySelector(".subBody").value = descriptions[1].body;
-
   frag.querySelector(".regist__form").addEventListener("submit", async e => {
     e.preventDefault();
     const payload = {
@@ -535,7 +549,6 @@ async function manageItem() {
   for (const { id, title, price, descriptions, category } of res.data) {
     const fragItem = document.importNode(templates.manageItem, true);
     fragItem.querySelector(".item-title").textContent = title;
-    console.log(`/items/${id}`);
     fragItem
       .querySelector(".item-delete")
       .addEventListener("click", async e => {
