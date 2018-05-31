@@ -494,11 +494,22 @@ document.querySelector(".member__admin").addEventListener("click", e => {
 });
 async function manageItem() {
   const frag = document.importNode(templates.administrator, true)
+  frag.querySelector('.addItem').addEventListener('click', e => {
+    regist()
+  })
   const tbodyEl = frag.querySelector('.tbody')
   const res = await mallAPI.get('/items?_sort=id&_order=desc')
   for(const {id, title, price, descriptions} of res.data) {
     const fragItem = document.importNode(templates.manageItem, true)
     fragItem.querySelector('.item-title').textContent = title
+    console.log(`/items/${id}`)
+    fragItem.querySelector('.item-delete').addEventListener('click', async e => {
+      // 삭제는 되는데 에러발생... 왜일까 
+      const res = await mallAPI.delete(`/items/${id}`)
+    })
+    fragItem.querySelector('.item-edit').addEventListener('click', e => {
+
+    })
     tbodyEl.appendChild(fragItem)
   }
   render(frag)
