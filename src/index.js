@@ -109,7 +109,35 @@ async function loginPage(arg) {
   });
   render(frag);
 }
+async function isOverlap(id) {
+  const itemRes = await mallAPI.get(
+    `/bags?userId=${localStorage.getItem(`userId`)}`
+  );
+  // 하나라도 같은 아이템이 있다면, 패치 요청을 보내준다. 아니라면 포스트 요청을 보낸다.
+  console.log(`id: ${id}`);
 
+  const filter = itemRes.data.filter(element => element.itemId === id);
+  console.log(`filter:${filter[0]}`);
+  if (filter[0]) {
+    console.log("같은 아이템이 이미 장바구니에 있다. ");
+    console.log(filter[0].quantity);
+    const itemPayload = {
+      quantity: ++filter[0].quantity
+    };
+    console.log(itemPayload);
+    const res = await mallAPI.patch(`bags/${filter[0].id}`, itemPayload);
+  } else {
+    const payload = {
+      itemId: id,
+      userId: localStorage.getItem("userId"),
+      quantity: 1,
+      created: new Date()
+    };
+    const res = await mallAPI.post("/bags", payload);
+  }
+  // 요청을 보낸 후에는 장바구니로 이동할건지 물어본다.
+  goToBag();
+}
 // 디테일 페이지
 async function detailPage(id, title, descriptions, price) {
   const frag = document.importNode(templates.detail, true);
@@ -137,31 +165,7 @@ async function detailPage(id, title, descriptions, price) {
     render(frag)
   })
   frag.querySelector(".inBag").addEventListener("click", async e => {
-    const itemRes = await mallAPI.get(
-      `/bags?userId=${localStorage.getItem(`userId`)}`
-    );
-    // 하나라도 같은 아이템이 있다면, 패치 요청을 보내준다. 아니라면 포스트 요청을 보낸다.
-    console.log(`id: ${id}`);
-
-    const filter = itemRes.data.filter(element => element.itemId === id);
-    console.log(`filter:${filter[0]}`);
-    if (filter[0]) {
-      console.log("같은 아이템이 이미 장바구니에 있다. ");
-      console.log(filter[0].quantity);
-      const itemPayload = {
-        quantity: ++filter[0].quantity
-      };
-      console.log(itemPayload);
-      const res = await mallAPI.patch(`bags/${filter[0].id}`, itemPayload);
-    } else {
-      const payload = {
-        itemId: id,
-        userId: localStorage.getItem("userId"),
-        quantity: 1,
-        created: new Date()
-      };
-      const res = await mallAPI.post("/bags", payload);
-    }
+    isOverlap(id)
     // 요청을 보낸 후에는 장바구니로 이동할건지 물어본다.
     goToBag();
   });
@@ -176,7 +180,7 @@ async function mainPage(category = "all") {
   const listFrag = document.importNode(templates.list, true);
   const list = listFrag.querySelector(".columns");
 
-  var url = "/items";
+  let url = "/items";
   if (category !== "all") {
     url = url + "?category=" + category;
   }
