@@ -43,7 +43,7 @@
 
 
 .member {
-    &__login {
+    &__login, &__join {
       .authed & {
         display: none;
       }
@@ -54,7 +54,7 @@
        display: inline-block;
      }
    }
-   &__register {
+   &__admin {
      display: none;
      .admin & {
        display: inline-block;
@@ -62,3 +62,6 @@
    }
 }
 
+.image.is-1by1, .image.is-square {
+  padding-top: 0
+}

@@ -3,7 +3,7 @@ import axios from "axios";
 const mallAPI = axios.create({
   baseURL: process.env.API_URL
 });
-
+const memberEl = document.querySelector(".member");
 const rootEl = document.querySelector(".root");
 const templates = {
   join: document.querySelector("#join").content,
@@ -30,15 +30,32 @@ function render(frag) {
   rootEl.textContent = "";
   rootEl.appendChild(frag);
 }
-function login(token) {
+async function login(token) {
   localStorage.setItem("token", token);
   mallAPI.defaults.headers["Authorization"] = `Bearer ${token}`;
+  const meRes = await mallAPI.get("/me");
+  localStorage.setItem("userId", meRes.data.id);
+  memberEl.classList.add("authed");
+
+  //41은 관리자 계정임
+  if (Number(localStorage.getItem("userId")) === 41) {
+    memberEl.classList.add("admin");
+  }
 }
 function logout() {
   localStorage.removeItem("token");
   delete mallAPI.defaults.headers["Authorization"];
   localStorage.removeItem("userId");
+  memberEl.classList.remove("authed");
+  memberEl.classList.remove("admin");
 }
+document.querySelector(".member__login").addEventListener("click", e => {
+  loginPage();
+});
+document.querySelector(".member__logout").addEventListener("click", e => {
+  logout();
+});
+//에러인지 확인하는 로직
 
 // 회원가입
 document.querySelector(".member__join").addEventListener("click", e => {
@@ -54,21 +71,17 @@ async function joinPage() {
       username: e.target.elements.username.value,
       password: e.target.elements.password.value
     };
-    const detailPayload = {
-      address: e.target.elements.address.value,
-      phone: e.target.elements.phone.value
-    };
-    const res = await mallAPI.post("/users/register", payload);
-    login(res.data.token);
-    const meRes = await mallAPI.get("/me");
-    console.log(`meRes: ${meRes.data.id}`);
-    localStorage.setItem("userId", meRes.data.id);
-    //403 서버가 사용하지 않는 웹 페이지나 미디어를 사용자가 요청할 때
-    const detailRes = await mallAPI.patch(
-      `/users/${meRes.data.id}`,
-      detailPayload
+
+    const res = await mallAPI.post("/users/register", payload).then(
+      response => {
+        login(respose.data.token);
+        mainPage();
+      },
+      error => {
+        alert("아이디를 다시 입력해주십시오.");
+        joinPage();
+      }
     );
-    mainPage();
   });
   title("회원가입");
   render(frag);
@@ -87,10 +100,20 @@ async function loginPage(arg) {
       username: e.target.elements.username.value,
       password: e.target.elements.password.value
     };
-    const res = await mallAPI.post("/users/login", payload);
+    const res = await mallAPI.post("/users/login", payload).then(
+      response => {
+        login(respose.data.token);
+        mainPage();
+      },
+      error => {
+        alert("로그인 정보가 맞지 않습니다. 다시 입력해주세요.");
+        loginPage();
+      }
+    );
+
     login(res.data.token);
-    const idRes = await mallAPI.get(`users?username=${payload.username}`);
-    localStorage.setItem("userId", idRes.data[0].id);
+    // const idRes = await mallAPI.get(`users?username=${payload.username}`);
+    // localStorage.setItem("userId", idRes.data[0].id);
     mainPage();
   });
   frag.querySelector(".modal-close").addEventListener("click", e => {
@@ -463,7 +486,7 @@ async function addItem() {
 
   render(frag);
 }
-async function editItem(id, title, price, descriptions,category) {
+async function editItem(id, title, price, descriptions, category) {
   const frag = document.importNode(templates.regist, true);
 
   frag.querySelector(".category").value = category;
@@ -471,11 +494,11 @@ async function editItem(id, title, price, descriptions,category) {
   frag.querySelector(".price").value = price;
   frag.querySelector(".mainImg").value = descriptions[0].img;
   frag.querySelector(".mainBody").value = descriptions[0].body;
-  frag.querySelector('.subImg').value = descriptions[1].img
-  frag.querySelector('.subBody').value = descriptions[1].body
-  
-  frag.querySelector('.regist__form').addEventListener('submit', async e => {
-    e.preventDefault()
+  frag.querySelector(".subImg").value = descriptions[1].img;
+  frag.querySelector(".subBody").value = descriptions[1].body;
+
+  frag.querySelector(".regist__form").addEventListener("submit", async e => {
+    e.preventDefault();
     const payload = {
       category: e.target.elements.category.value,
       title: e.target.elements.title.value,
@@ -489,18 +512,19 @@ async function editItem(id, title, price, descriptions,category) {
           img: e.target.elements.subImg.value,
           body: e.target.elements.subBody.value
         }
-      ],
+      ]
     };
-    
+
     const res = await mallAPI.patch(`/items/${id}`, payload);
-    manageItem()
-  })
-  render(frag)
+    manageItem();
+  });
+  render(frag);
 }
 
 document.querySelector(".member__admin").addEventListener("click", e => {
   manageItem();
 });
+
 async function manageItem() {
   const frag = document.importNode(templates.administrator, true);
   frag.querySelector(".addItem").addEventListener("click", e => {
