@@ -109,7 +109,7 @@ async function loginPage(arg) {
   });
   render(frag);
 }
-async function isOverlap(id) {
+async function isOverlapItem(id) {
   const itemRes = await mallAPI.get(
     `/bags?userId=${localStorage.getItem(`userId`)}`
   );
@@ -138,6 +138,24 @@ async function isOverlap(id) {
   // 요청을 보낸 후에는 장바구니로 이동할건지 물어본다.
   goToBag();
 }
+
+
+// 장바구니에 담지 않고 바로구매했을 시에 함수 
+async function buyNow(id, title,descriptions,price) {
+
+  const frag = document.importNode(templates.order, true)
+  const fragItem = document.importNode(templates.orderItem, true)
+  const orderList = frag.querySelector('.order-list')
+  console.log(id, title, descriptions, price)
+  fragItem.querySelector('.item__img').src = descriptions[0].img
+  fragItem.querySelector('.item__title').textContent = title
+  fragItem.querySelector('.item__price').textContent = price
+  fragItem.querySelector('.item__quantity').textContent = 1
+  orderList.appendChild(fragItem)
+  frag.querySelector('.order__total').textContent = price
+  render(frag)
+}
+
 // 디테일 페이지
 async function detailPage(id, title, descriptions, price) {
   const frag = document.importNode(templates.detail, true);
@@ -152,20 +170,10 @@ async function detailPage(id, title, descriptions, price) {
     detail.appendChild(detailFrag);
   }
   frag.querySelector('.buying').addEventListener('click', e => {
-    const frag = document.importNode(templates.order, true)
-    const fragItem = document.importNode(templates.orderItem, true)
-    const orderList = frag.querySelector('.order-list')
-    console.log(id, title, descriptions, price)
-    fragItem.querySelector('.item__img').src = descriptions[0].img
-    fragItem.querySelector('.item__title').textContent = title
-    fragItem.querySelector('.item__price').textContent = price
-    fragItem.querySelector('.item__quantity').textContent = 1
-    orderList.appendChild(fragItem)
-    frag.querySelector('.order__total').textContent = price
-    render(frag)
+    buyNow(id, title,descriptions,price)
   })
   frag.querySelector(".inBag").addEventListener("click", async e => {
-    isOverlap(id)
+    isOverlapItem(id)
     // 요청을 보낸 후에는 장바구니로 이동할건지 물어본다.
     goToBag();
   });
@@ -200,15 +208,11 @@ async function mainPage(category = "all") {
     frag.querySelector(".item__price").textContent = price;
 
     frag.querySelector(".inBag").addEventListener("click", async e => {
-      const payload = {
-        itemId: id,
-        userId: localStorage.getItem("userId"),
-        quantity: 1,
-        created: new Date()
-      };
-      console.log(payload);
-      const res = await mallAPI.post("/bags", payload);
+      isOverlapItem(id)
     });
+    frag.querySelector('.buying').addEventListener('click', e => {
+      buyNow(id, title, descriptions, price)
+    })
     list.appendChild(frag);
   }
   render(listFrag);
