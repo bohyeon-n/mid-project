@@ -91,7 +91,6 @@ async function loginPage(arg) {
     login(res.data.token);
     const idRes = await mallAPI.get(`users?username=${payload.username}`);
     localStorage.setItem("userId", idRes.data[0].id);
-    document.querySelector(".member__login").textContent = "로그아웃";
     mainPage();
   });
   frag.querySelector(".modal-close").addEventListener("click", e => {
@@ -104,11 +103,9 @@ async function loginPage(arg) {
 }
 
 async function isOverlapItem(id) {
-  const userId = localStorage.getItem('userId')
-  console.log(`id:${id}`)
-  const res = await mallAPI.get(
-    `bags?userId=${userId}&itemId=${id}`
-  );
+  const userId = localStorage.getItem("userId");
+  console.log(`id:${id}`);
+  const res = await mallAPI.get(`bags?userId=${userId}&itemId=${id}`);
   if (res.data.length !== 0) {
     const payload = {
       quantity: res.data[0].quantity + 1
@@ -197,26 +194,21 @@ async function detailPage(id, title, descriptions, price) {
 async function mainPage(category = "all") {
   const listFrag = document.importNode(templates.list, true);
   const list = listFrag.querySelector(".columns");
-
   let url = "/items?_sort=id&_order=desc";
   if (category !== "all") {
     url = `items?category=${category}&_sort=id&_order=desc`;
   } else {
     title("new arrival");
   }
-
   const res = await mallAPI.get(url);
   for (const { id, title, descriptions, price, likeCount } of res.data) {
     const frag = document.importNode(templates.itemEl, true);
     frag.querySelector(".item__title").textContent = title;
     frag.querySelector(".item__likeCount").textContent = likeCount;
     frag.querySelector(".item__img").src = descriptions[0].img;
-
     frag.querySelector(".image").addEventListener("click", e => {
       detailPage(id, title, descriptions, price);
     });
-
-    // frag.querySelector('.item__description').textContent = descriptions[0].body
     frag.querySelector(".item__price").textContent = price;
 
     frag.querySelector(".inBag").addEventListener("click", async e => {
@@ -286,13 +278,10 @@ document.querySelector(".member__bag").addEventListener("click", e => {
   }
 });
 
-
 async function bagPage() {
   const listFrag = document.importNode(templates.list, true);
-  const userId = localStorage.getItem('userId')
-  const res = await mallAPI.get(
-    `/bags?userId=${userId}&_expand=item`
-  );
+  const userId = localStorage.getItem("userId");
+  const res = await mallAPI.get(`/bags?userId=${userId}&_expand=item`);
   let totalPrice = 0;
   if (res.data.length === 0) {
     listFrag.querySelector(".alert").textContent =
@@ -326,8 +315,7 @@ async function bagPage() {
       quantityEl.value = quantity;
       frag.querySelector(".item__totalPrice").textContent =
         quantity * item.price;
-      frag.querySelector(".item__img").src =
-        item.descriptions[0].img;
+      frag.querySelector(".item__img").src = item.descriptions[0].img;
       frag.querySelector(".delete").addEventListener("click", async e => {
         const res = await mallAPI.delete(`/bags/${id}`);
         bagPage();
@@ -475,14 +463,41 @@ async function addItem() {
 
   render(frag);
 }
-async function editItem(id, title, price, descriptions) {
+async function editItem(id, title, price, descriptions,category) {
   const frag = document.importNode(templates.regist, true);
-  frag.querySelector('.category').value = category
-  frag.querySelector('.title').textContent = title
-  frag.querySelector('.price').textContent = price
-  frag.querySelector('.mainImg').src = descriptions[0].img 
-  frag.querySelector('.')
+
+  frag.querySelector(".category").value = category;
+  frag.querySelector(".title").value = title;
+  frag.querySelector(".price").value = price;
+  frag.querySelector(".mainImg").value = descriptions[0].img;
+  frag.querySelector(".mainBody").value = descriptions[0].body;
+  frag.querySelector('.subImg').value = descriptions[1].img
+  frag.querySelector('.subBody').value = descriptions[1].body
+  
+  frag.querySelector('.regist__form').addEventListener('submit', async e => {
+    e.preventDefault()
+    const payload = {
+      category: e.target.elements.category.value,
+      title: e.target.elements.title.value,
+      price: e.target.elements.price.value,
+      descriptions: [
+        {
+          img: e.target.elements.mainImg.value,
+          body: e.target.elements.mainBody.value
+        },
+        {
+          img: e.target.elements.subImg.value,
+          body: e.target.elements.subBody.value
+        }
+      ],
+    };
+    
+    const res = await mallAPI.patch(`/items/${id}`, payload);
+    manageItem()
+  })
+  render(frag)
 }
+
 document.querySelector(".member__admin").addEventListener("click", e => {
   manageItem();
 });
@@ -504,7 +519,7 @@ async function manageItem() {
         const res = await mallAPI.delete(`/items/${id}`);
       });
     fragItem.querySelector(".item-edit").addEventListener("click", e => {
-      editItem(id, titld, price, descriptions, category)
+      editItem(id, title, price, descriptions, category);
     });
     tbodyEl.appendChild(fragItem);
   }
