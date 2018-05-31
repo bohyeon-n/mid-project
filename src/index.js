@@ -22,8 +22,8 @@ const templates = {
   myPageItem: document.querySelector("#myPageItem").content,
   orderHistory: document.querySelector("#orderHistory").content,
   orderHistoryItem: document.querySelector("#orderHistoryItem").content,
-  administrator: document.querySelector('#administrator').content,
-  manageItem: document.querySelector('#manageItem').content
+  administrator: document.querySelector("#administrator").content,
+  manageItem: document.querySelector("#manageItem").content
 };
 
 function render(frag) {
@@ -134,7 +134,6 @@ async function isOverlapItem(id) {
 
 // 장바구니에 담지 않고 바로구매했을 시에 바로구매 함수
 async function buyNow(id, title, descriptions, price) {
-
   const frag = document.importNode(templates.order, true);
   const fragItem = document.importNode(templates.orderItem, true);
   const orderList = frag.querySelector(".order-list");
@@ -207,9 +206,9 @@ async function mainPage(category = "all") {
 
   let url = "/items?_sort=id&_order=desc";
   if (category !== "all") {
-    url = `items?category=${category}&_sort=id&_order=desc`
+    url = `items?category=${category}&_sort=id&_order=desc`;
   } else {
-    title('new arrival')
+    title("new arrival");
   }
 
   const res = await mallAPI.get(url);
@@ -292,25 +291,20 @@ document.querySelector(".member__bag").addEventListener("click", e => {
     loginPage(alert);
   }
 });
+
+
 async function bagPage() {
   const listFrag = document.importNode(templates.list, true);
+  const userId = localStorage.getItem('userId')
   const res = await mallAPI.get(
-    `/bags?userId=${localStorage.getItem("userId")}`
+    `/bags?userId=${userId}&_expand=item`
   );
   let totalPrice = 0;
-  const item = [];
   if (res.data.length === 0) {
-    listFrag.querySelector('.alert').textContent = "장바구니에 담긴 상품이 없습니다."
+    listFrag.querySelector(".alert").textContent =
+      "장바구니에 담긴 상품이 없습니다.";
   } else {
-    for (let { id, itemId, quantity, created } of res.data) {
-      const itemRes = await mallAPI.get(`/items?id=${itemId}`);
-      item.push({
-        title: itemRes.data[0].title,
-        itemImg: itemRes.data[0].descriptions[0].img,
-        itemId: id,
-        price: itemRes.data[0].price,
-        quantity: quantity
-      });
+    for (let { id, itemId, quantity, created, item } of res.data) {
       // 수량조정하기 버튼 클릭 시에 input value 바꿔주고, 통신해서 quantity patch요청보내기
       const frag = document.importNode(templates.bag, true);
       const quantityEl = frag.querySelector(".item__quantity");
@@ -332,16 +326,14 @@ async function bagPage() {
         }
         bagPage();
       });
-
-      frag.querySelector(".item__title").textContent = itemRes.data[0].title;
-      totalPrice += Number(itemRes.data[0].price * quantity);
-      frag.querySelector(".item__price").textContent = itemRes.data[0].price;
+      frag.querySelector(".item__title").textContent = item.title;
+      totalPrice += Number(item.price * quantity);
+      frag.querySelector(".item__price").textContent = item.price;
       quantityEl.value = quantity;
       frag.querySelector(".item__totalPrice").textContent =
-        quantity * itemRes.data[0].price;
+        quantity * item.price;
       frag.querySelector(".item__img").src =
-        itemRes.data[0].descriptions[0].img;
-
+        item.descriptions[0].img;
       frag.querySelector(".delete").addEventListener("click", async e => {
         const res = await mallAPI.delete(`/bags/${id}`);
         bagPage();
@@ -359,7 +351,7 @@ async function bagPage() {
     listFrag.appendChild(totalFrag);
   }
   render(listFrag);
-  title('장바구니')
+  title("장바구니");
 }
 
 // 주문 페이지 (장바구니에서 주문했을 시에 )
@@ -455,15 +447,15 @@ async function orderHistoryPage(name, created, total, items, id, address, tel) {
     fragList.appendChild(itemFrag);
   }
   render(frag);
-  title('주문 내역')
+  title("주문 내역");
 }
 // 새로고침 할 때 로그인했는지 안했는지 보기
 
-
 //관리자용
 // 상품등록 임시로 만들기
-async function regist() {
+async function addItem() {
   const frag = document.importNode(templates.regist, true);
+
   frag.querySelector(".regist__form").addEventListener("submit", async e => {
     e.preventDefault();
     const payload = {
@@ -486,32 +478,42 @@ async function regist() {
     const res = await mallAPI.post("/items", payload);
     regist();
   });
+
   render(frag);
 }
-
+async function editItem(id, title, price, descriptions) {
+  const frag = document.importNode(templates.regist, true);
+  frag.querySelector('.category').value = category
+  frag.querySelector('.title').textContent = title
+  frag.querySelector('.price').textContent = price
+  frag.querySelector('.mainImg').src = descriptions[0].img 
+  frag.querySelector('.')
+}
 document.querySelector(".member__admin").addEventListener("click", e => {
-  manageItem()
+  manageItem();
 });
 async function manageItem() {
-  const frag = document.importNode(templates.administrator, true)
-  frag.querySelector('.addItem').addEventListener('click', e => {
-    regist()
-  })
-  const tbodyEl = frag.querySelector('.tbody')
-  const res = await mallAPI.get('/items?_sort=id&_order=desc')
-  for(const {id, title, price, descriptions} of res.data) {
-    const fragItem = document.importNode(templates.manageItem, true)
-    fragItem.querySelector('.item-title').textContent = title
-    console.log(`/items/${id}`)
-    fragItem.querySelector('.item-delete').addEventListener('click', async e => {
-      // 삭제는 되는데 에러발생... 왜일까 
-      const res = await mallAPI.delete(`/items/${id}`)
-    })
-    fragItem.querySelector('.item-edit').addEventListener('click', e => {
-
-    })
-    tbodyEl.appendChild(fragItem)
+  const frag = document.importNode(templates.administrator, true);
+  frag.querySelector(".addItem").addEventListener("click", e => {
+    addItem();
+  });
+  const tbodyEl = frag.querySelector(".tbody");
+  const res = await mallAPI.get("/items?_sort=id&_order=desc");
+  for (const { id, title, price, descriptions, category } of res.data) {
+    const fragItem = document.importNode(templates.manageItem, true);
+    fragItem.querySelector(".item-title").textContent = title;
+    console.log(`/items/${id}`);
+    fragItem
+      .querySelector(".item-delete")
+      .addEventListener("click", async e => {
+        // 삭제는 되는데 에러발생... 왜일까
+        const res = await mallAPI.delete(`/items/${id}`);
+      });
+    fragItem.querySelector(".item-edit").addEventListener("click", e => {
+      editItem(id, titld, price, descriptions, category)
+    });
+    tbodyEl.appendChild(fragItem);
   }
-  render(frag)
-  title('관리자 페이지')
+  render(frag);
+  title("관리자 페이지");
 }
