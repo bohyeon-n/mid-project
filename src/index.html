@@ -51,21 +51,24 @@
               </div>
             </div>
           </div>
-          <div class="navbar-end">
-            <a class="navbar-item login">
+          <div class="navbar-end member authed admin">
+            <a class="navbar-item member__login">
               로그인
             </a>
-            <a class="navbar-item join">
+            <a class="navbar-item member__logout ">
+              로그아웃
+            </a>
+            <a class="navbar-item member__join">
               회원가입
             </a>
-            <a class="navbar-item bag">
+            <a class="navbar-item member__bag">
               장바구니
             </a>
-            <a class="navbar-item myPage">
+            <a class="navbar-item member__myPage">
               마이페이지
             </a>
-            <a class="navbar-item register">
-              상품등록하기
+            <a class="navbar-item member__admin admin">
+              관리하기
             </a>
             <form class=" navbar-item search">
               <input type="search" name="search" required placeholder="검색어를 입력하세요">
@@ -82,7 +85,7 @@
 
 
     <div class="container">
-      <h1 class="title">신상</h1>
+      <h1 class="title"></h1>
 
       <div class="root">
 
@@ -223,6 +226,7 @@
 
   <!-- 메인 화면 template -->
   <template id="list">
+    <div class="alert"></div>
     <div class="columns list__columns">
     </div>
   </template>
@@ -306,8 +310,12 @@
         <div class="align">
           <table>
             <tr>
-              <td><div class="titl">상품: </div></td>
-              <td><div class="item__title">title</div></td>
+              <td>
+                <div class="titl">상품: </div>
+              </td>
+              <td>
+                <div class="item__title">title</div>
+              </td>
             </tr>
           </table>
 
@@ -332,27 +340,27 @@
           </table>
 
         </form>
-      <table>
-        <tr>
-          <td>
-          <div class="price__title">가격: </div>  
-          </td>
-          <td>
-            
-            <div class="item__price">price</div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-          <div class="totalPrice__title">합계: </div>  
-          </td>
-          <td>
-            
-          <div class="item__totalPrice">total</div>
-          </td>
-        </tr>
-      </table>
-       
+        <table>
+          <tr>
+            <td>
+              <div class="price__title">가격: </div>
+            </td>
+            <td>
+
+              <div class="item__price">price</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="totalPrice__title">합계: </div>
+            </td>
+            <td>
+
+              <div class="item__totalPrice">total</div>
+            </td>
+          </tr>
+        </table>
+
       </div>
     </div>
   </template>
@@ -362,7 +370,7 @@
   <!-- 마이페이지 -->
   <template id="myPage">
     <div class="box">
-    <dive class="mypage__message">주문하신 상품입니다.</dive>
+      <dive class="mypage__message">주문하신 상품입니다.</dive>
     </div>
   </template>
   <template id="myPageItem">
@@ -427,6 +435,54 @@
 
   </template>
 
+  <template id="administrator">
+    <button class="addItem">상품 등록하기</button>
+    <div class="manageItem">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>상품 이름</th>
+            <th>삭제</th>
+            <th>수정</th>
+            <th>품절 여부</th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <th>상품 이름</th>
+            <th>삭제</th>
+            <th>수정</th>
+            <th>품절 여부</th>
+          </tr>
+        </tfoot>
+        <tbody class="tbody">
+
+        </tbody>
+      </table>
+    </div>
+  </template>
+
+  <template id="manageItem">
+    <tr>
+      <td class="item-title">title</td>
+      <td class="item-edit">
+        <button class="item-delete">삭제</button>
+      </td>
+      <td class="item-edit">
+        <button class="item-deit">수정</button>
+      </td>
+      <td class="item-stock">
+        <div class="control">
+          <label class="radio">
+            <input type="radio" name="answer"> Yes
+          </label>
+          <label class="radio">
+            <input type="radio" name="answer"> No
+          </label>
+        </div>
+      </td>
+    </tr>
+  </template>
 
 
   <!-- 상품 등록 페이지(관리자용) -->

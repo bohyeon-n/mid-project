@@ -21,7 +21,9 @@ const templates = {
   myPage: document.querySelector("#myPage").content,
   myPageItem: document.querySelector("#myPageItem").content,
   orderHistory: document.querySelector("#orderHistory").content,
-  orderHistoryItem: document.querySelector("#orderHistoryItem").content
+  orderHistoryItem: document.querySelector("#orderHistoryItem").content,
+  administrator: document.querySelector('#administrator').content,
+  manageItem: document.querySelector('#manageItem').content
 };
 
 function render(frag) {
@@ -39,7 +41,7 @@ function logout() {
 }
 
 // 회원가입
-document.querySelector(".join").addEventListener("click", e => {
+document.querySelector(".member__join").addEventListener("click", e => {
   joinPage();
 });
 async function joinPage() {
@@ -72,16 +74,6 @@ async function joinPage() {
   render(frag);
 }
 
-// 로그인
-document.querySelector(".login").addEventListener("click", e => {
-  if (!localStorage.getItem("token")) {
-    loginPage();
-  } else {
-    logout();
-    document.querySelector(".login").textContent = "로그인";
-  }
-});
-
 async function loginPage(arg) {
   const frag = document.importNode(templates.login, true);
   if (arg !== undefined) {
@@ -99,7 +91,7 @@ async function loginPage(arg) {
     login(res.data.token);
     const idRes = await mallAPI.get(`users?username=${payload.username}`);
     localStorage.setItem("userId", idRes.data[0].id);
-    document.querySelector(".login").textContent = "로그아웃";
+    document.querySelector(".member__login").textContent = "로그아웃";
     mainPage();
   });
   frag.querySelector(".modal-close").addEventListener("click", e => {
@@ -213,9 +205,11 @@ async function mainPage(category = "all") {
   const listFrag = document.importNode(templates.list, true);
   const list = listFrag.querySelector(".columns");
 
-  let url = "/items";
+  let url = "/items?_sort=id&_order=desc";
   if (category !== "all") {
-    url = url + "?category=" + category;
+    url = `items?category=${category}&_sort=id&_order=desc`
+  } else {
+    title('new arrival')
   }
 
   const res = await mallAPI.get(url);
@@ -291,7 +285,7 @@ document
 
 // 장바구니 사용자의 장바구니를 보여준다.
 
-document.querySelector(".bag").addEventListener("click", e => {
+document.querySelector(".member__bag").addEventListener("click", e => {
   if (localStorage.getItem("userId")) {
     bagPage();
   } else {
@@ -306,7 +300,7 @@ async function bagPage() {
   let totalPrice = 0;
   const item = [];
   if (res.data.length === 0) {
-    alert("장바구니에 담긴 상품이 없습니다.");
+    listFrag.querySelector('.alert').textContent = "장바구니에 담긴 상품이 없습니다."
   } else {
     for (let { id, itemId, quantity, created } of res.data) {
       const itemRes = await mallAPI.get(`/items?id=${itemId}`);
@@ -365,6 +359,7 @@ async function bagPage() {
     listFrag.appendChild(totalFrag);
   }
   render(listFrag);
+  title('장바구니')
 }
 
 // 주문 페이지 (장바구니에서 주문했을 시에 )
@@ -407,7 +402,7 @@ async function orderPage(res, item, totalPrice) {
   title("주문페이지");
   render(frag);
 }
-document.querySelector(".myPage").addEventListener("click", e => {
+document.querySelector(".member__myPage").addEventListener("click", e => {
   myPage();
 });
 // 주문내역확인 페이지
@@ -460,19 +455,13 @@ async function orderHistoryPage(name, created, total, items, id, address, tel) {
     fragList.appendChild(itemFrag);
   }
   render(frag);
+  title('주문 내역')
 }
 // 새로고침 할 때 로그인했는지 안했는지 보기
-if (localStorage.getItem("token")) {
-  document.querySelector(".login").textContent = "로그아웃";
-} else {
-  document.querySelector(".login").textContent = "로그인";
-}
+
 
 //관리자용
 // 상품등록 임시로 만들기
-document.querySelector(".register").addEventListener("click", e => {
-  regist();
-});
 async function regist() {
   const frag = document.importNode(templates.regist, true);
   frag.querySelector(".regist__form").addEventListener("submit", async e => {
@@ -498,4 +487,20 @@ async function regist() {
     regist();
   });
   render(frag);
+}
+
+document.querySelector(".member__admin").addEventListener("click", e => {
+  manageItem()
+});
+async function manageItem() {
+  const frag = document.importNode(templates.administrator, true)
+  const tbodyEl = frag.querySelector('.tbody')
+  const res = await mallAPI.get('/items?_sort=id&_order=desc')
+  for(const {id, title, price, descriptions} of res.data) {
+    const fragItem = document.importNode(templates.manageItem, true)
+    fragItem.querySelector('.item-title').textContent = title
+    tbodyEl.appendChild(fragItem)
+  }
+  render(frag)
+  title('관리자 페이지')
 }

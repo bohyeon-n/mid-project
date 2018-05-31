@@ -40,3 +40,25 @@
 
   width: 4rem;
 }
+
+
+.member {
+    &__login {
+      .authed & {
+        display: none;
+      }
+    }
+   &__logout, &__myPage {
+     display: none;
+     .authed & {
+       display: inline-block;
+     }
+   }
+   &__register {
+     display: none;
+     .admin & {
+       display: inline-block;
+     }
+   }
+}
+
