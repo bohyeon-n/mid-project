@@ -23,7 +23,8 @@ const templates = {
   orderHistory: document.querySelector("#orderHistory").content,
   orderHistoryItem: document.querySelector("#orderHistoryItem").content,
   administrator: document.querySelector("#administrator").content,
-  manageItem: document.querySelector("#manageItem").content
+  manageItem: document.querySelector("#manageItem").content,
+  simpleList: document.querySelector("#simpleList").content
 };
 
 function render(frag) {
@@ -56,10 +57,10 @@ document.querySelector(".member__login").addEventListener("click", e => {
 document.querySelector(".member__logout").addEventListener("click", e => {
   logout();
 });
-// 새로고침 시에 로그인 했는지 확인하는 
-if(localStorage.getItem('token')) {
-  const token = localStorage.getItem('token')
-  login(token)
+// 새로고침 시에 로그인 했는지 확인하는
+if (localStorage.getItem("token")) {
+  const token = localStorage.getItem("token");
+  login(token);
 }
 // 회원가입
 document.querySelector(".member__join").addEventListener("click", e => {
@@ -113,7 +114,7 @@ async function loginPage(arg) {
         alert("로그인 정보가 맞지 않습니다. 다시 입력해주세요.");
         loginPage();
       }
-    )
+    );
     // const idRes = await mallAPI.get(`users?username=${payload.username}`);
     // localStorage.setItem("userId", idRes.data[0].id);
     mainPage();
@@ -155,9 +156,9 @@ async function buyNow(id, title, descriptions, price) {
   const orderList = frag.querySelector(".order-list");
   console.log(id, title, descriptions, price);
   fragItem.querySelector(".item__img").src = descriptions[0].img;
-  fragItem.querySelector(".item__title").textContent = title;
-  fragItem.querySelector(".item__price").textContent = price;
-  fragItem.querySelector(".item__quantity").textContent = 1;
+  fragItem.querySelector(".item__title").textContent = `상품: ${title}`;
+  fragItem.querySelector(".item__price").textContent = `가격: ${price}`;
+  fragItem.querySelector(".item__quantity").textContent = `수량: 1`;
   orderList.appendChild(fragItem);
   frag.querySelector(".order__total").textContent = price;
   const item = [
@@ -186,6 +187,7 @@ async function buyNow(id, title, descriptions, price) {
     myPage();
   });
   render(frag);
+  title('주문서 작성')
 }
 
 // 디테일 페이지
@@ -223,42 +225,46 @@ async function mainPage(category = "all", sort = "id", order = "desc") {
   if (category !== "all") {
     url = `items?category=${category}&_sort=${sort}&_order=${order}`;
   } else {
-    title("new arrival");
+    title("new arrivals");
   }
-  listFrag.querySelector('.latest').addEventListener('click', async e => {
-    mainPage(category = `${category}`)
-  })
-  listFrag.querySelector('.sortedPriceAsc').addEventListener('click', async e => {
-    mainPage(category = `${category}`, sort="price", order="asc")
-  })
-  listFrag.querySelector('.sortedPriceDesc').addEventListener('click', async e => {
-    mainPage(category= `${category}`, sort="price", order="desc")
-  })
-  listFrag.querySelector('.bestAsc').addEventListener('click', async e => {
-    mainPage(category= `${category}`, sort="likeCount", order="asc")
-  })
+  listFrag.querySelector(".latest").addEventListener("click", async e => {
+    mainPage((category = `${category}`));
+  });
+  listFrag
+    .querySelector(".sortedPriceAsc")
+    .addEventListener("click", async e => {
+      mainPage((category = `${category}`), (sort = "price"), (order = "asc"));
+    });
+  listFrag
+    .querySelector(".sortedPriceDesc")
+    .addEventListener("click", async e => {
+      mainPage((category = `${category}`), (sort = "price"), (order = "desc"));
+    });
+  listFrag.querySelector(".bestAsc").addEventListener("click", async e => {
+    mainPage((category = `${category}`), (sort = "likeCount"), (order = "asc"));
+  });
   const res = await mallAPI.get(url);
   for (const { id, title, descriptions, price, likeCount } of res.data) {
     const frag = document.importNode(templates.itemEl, true);
     frag.querySelector(".item__title").textContent = title;
     frag.querySelector(".item__img").src = descriptions[0].img;
-    frag.querySelector('.like').addEventListener('click', async e => {
-      console.log('sldkfj')
-      const userId = localStorage.getItem('userId')
-      const res = await mallAPI.get(`/likes?userId=${userId}&itemId=${id}`)
-       if(res.data.length === 0) {
-         const payload = {
-           userId: userId,
-           itemId: id,
-           created: new Date()
-         }
-         const patchPayload = {
-           likeCount: likeCount + 1
-         }
-         const likesRes = await mallAPI.post('/likes', payload)
-         const likeCountRes = await mallAPI.patch(`items/${id}`, patchPayload)
-       } 
-    })
+    frag.querySelector(".like").addEventListener("click", async e => {
+      console.log("sldkfj");
+      const userId = localStorage.getItem("userId");
+      const res = await mallAPI.get(`/likes?userId=${userId}&itemId=${id}`);
+      if (res.data.length === 0) {
+        const payload = {
+          userId: userId,
+          itemId: id,
+          created: new Date()
+        };
+        const patchPayload = {
+          likeCount: likeCount + 1
+        };
+        const likesRes = await mallAPI.post("/likes", payload);
+        const likeCountRes = await mallAPI.patch(`items/${id}`, patchPayload);
+      }
+    });
     frag.querySelector(".image").addEventListener("click", e => {
       detailPage(id, title, descriptions, price);
     });
@@ -332,7 +338,7 @@ document.querySelector(".member__bag").addEventListener("click", e => {
 });
 
 async function bagPage() {
-  const listFrag = document.importNode(templates.list, true);
+  const listFrag = document.importNode(templates.simpleList, true);
   const userId = localStorage.getItem("userId");
   const res = await mallAPI.get(`/bags?userId=${userId}&_expand=item`);
   let totalPrice = 0;
@@ -380,7 +386,8 @@ async function bagPage() {
     const totalFrag = document.importNode(templates.totalPrice, true);
     totalFrag.querySelector(".total").textContent = totalPrice;
     totalFrag.querySelector(".buy").addEventListener("click", e => {
-      orderPage(res.data, item, totalPrice);
+      console.log(`item:   ${res.data[0].item.descriptions[0].img}`)
+      orderPage(res.data, totalPrice);
     });
 
     listFrag.appendChild(totalFrag);
@@ -390,17 +397,26 @@ async function bagPage() {
 }
 
 // 주문 페이지 (장바구니에서 주문했을 시에 )
-async function orderPage(res, item, totalPrice) {
+async function orderPage(res, totalPrice) {
   console.log("totalprice: " + totalPrice);
   const frag = document.importNode(templates.order, true);
   const orderList = frag.querySelector(".order-list");
-  for (let i = 0; i < item.length; i++) {
+  const item = []
+  console.log(`length: ${res.length}`)
+
+  for (let i = 0; i < res.length; i++) {
     const itemFrag = document.importNode(templates.orderItem, true);
-    console.log(item);
-    itemFrag.querySelector(".item__img").src = item[i].itemImg;
-    itemFrag.querySelector(".item__title").textContent = item[i].title;
-    itemFrag.querySelector(".item__quantity").textContent = item[i].quantity;
-    itemFrag.querySelector(".item__price").textContent = item[i].price;
+    itemFrag.querySelector(".item__img").src = res[i].item.descriptions[0].img;
+    itemFrag.querySelector(".item__title").textContent = res[i].item.title;
+    itemFrag.querySelector(".item__quantity").textContent = res[i].quantity;
+    itemFrag.querySelector(".item__price").textContent = res[i].price;
+    item.push({
+      title: res[i].item.title,
+      itemImg: res[i].item.descriptions[0].img,
+      itemId: res[i].item.id,
+      price: res[i].price,
+      quantity: res[i].quantity
+    });
     orderList.appendChild(itemFrag);
   }
   frag.querySelector(".order__form").addEventListener("submit", async e => {
@@ -415,6 +431,7 @@ async function orderPage(res, item, totalPrice) {
       total: totalPrice,
       items: item
     };
+    console.log(payload)
     const orderRes = await mallAPI.post("/orderHistories", payload);
 
     //주문 완료 시 장바구니 비워주기
@@ -426,15 +443,58 @@ async function orderPage(res, item, totalPrice) {
     myPage();
   });
   frag.querySelector(".order__total").textContent = totalPrice;
-  title("주문페이지");
+  title("주문서 작성");
   render(frag);
 }
 document.querySelector(".member__myPage").addEventListener("click", e => {
   myPage();
 });
+//wishlist페이지
+
+async function wishlistPage() {
+  const userId = localStorage.getItem("userId");
+  const listFrag = document.importNode(templates.simpleList, true);
+  const res = await mallAPI.get(`/likes?userId=${userId}&_expand=item`);
+  console.log(res.data)
+  if (res.data[0].length === 0) {
+    alert('위시 리스트에 없다.')
+  }
+  for (const { item, id } of res.data) {
+    const frag = document.importNode(templates.itemEl, true);
+    const likeEl = frag.querySelector(".like");
+    frag.querySelector(".item__title").textContent = item.title;
+    frag.querySelector(".item__price").textContent = item.price;
+    frag.querySelector(".item__img").src = item.descriptions[0].img;
+    likeEl.textContent = "위시리스트삭제";
+    likeEl.addEventListener("click", async e => {
+      console.log(item.title);
+      const payload = {
+        likeCount: item.likeCount - 1
+      };
+      console.log(id);
+      const patchres = await mallAPI.patch(`/items/${item.id}`, payload);
+      const deleteres = await mallAPI.delete(`/likes/${id}`);
+      wishlistPage();
+    });
+    frag.querySelector('.inBag').addEventListener('click', async e => {
+      isOverlapItem(item.id)
+      const deleteRes = await mallAPI.delete(`/likes/${id}`)
+    })
+    frag.querySelector('.buying').addEventListener('click', async e => {
+      buyNow(item.id, item.titl, item.descriptions, item.price)
+      console.log(item.id, item.title, item.descriptions, item.price)
+    })
+    listFrag.appendChild(frag);
+  }
+  render(listFrag);
+  title("wishlist");
+}
 // 주문내역확인 페이지
 async function myPage() {
   const frag = document.importNode(templates.myPage, true);
+  frag.querySelector(".wishlist").addEventListener("click", e => {
+    wishlistPage();
+  });
   const res = await mallAPI.get(
     `/orderHistories?userId=${localStorage.getItem("userId")}`
   );
@@ -465,21 +525,22 @@ async function myPage() {
 }
 
 async function orderHistoryPage(name, created, total, items, id, address, tel) {
-  console.log(address);
-  const frag = document.importNode(templates.orderHistory, true);
-  frag.querySelector(".date").textContent = created;
-  frag.querySelector(".total").textContent = total;
-  frag.querySelector(".name").textContent = name;
-  frag.querySelector(".address").textContent = address;
-  frag.querySelector(".phone").textContent = tel;
-  const fragList = frag.querySelector(".orderHistories__list");
+  console.log(name, created, total, items, id, address, tel)
+  console.log(address)
+  const frag = document.importNode(templates.orderHistory, true)
+  frag.querySelector(".date").textContent = created
+  frag.querySelector(".total").textContent = total
+  frag.querySelector(".name").textContent = name
+  frag.querySelector(".address").textContent = address
+  frag.querySelector(".phone").textContent = tel
+  const fragList = frag.querySelector(".orderHistories__list")
   for (let i = 0; i < items.length; i++) {
-    const itemFrag = document.importNode(templates.orderHistoryItem, true);
+    const itemFrag = document.importNode(templates.orderHistoryItem, true)
     itemFrag.querySelector(".image").src = items[i].itemImg;
-    itemFrag.querySelector(".title").textContent = items[i].title;
-    itemFrag.querySelector(".quantity").textContent = items[i].quantity;
-    itemFrag.querySelector(".price").textContent = items[i].price;
-    fragList.appendChild(itemFrag);
+    itemFrag.querySelector(".item__title").textContent = `상품: ${items[i].title}`
+    itemFrag.querySelector(".quantity").textContent = `주문수량: ${items[i].quantity}`
+    itemFrag.querySelector(".price").textContent = `가격: ${items[i].price}`
+    fragList.appendChild(itemFrag)
   }
   render(frag);
   title("주문 내역");
@@ -511,7 +572,7 @@ async function addItem() {
     };
     console.log(payload);
     const res = await mallAPI.post("/items", payload);
-    regist();
+    addItem();
   });
 
   render(frag);
@@ -562,13 +623,15 @@ async function manageItem() {
   });
   const tbodyEl = frag.querySelector(".tbody");
   const res = await mallAPI.get("/items?_sort=id&_order=desc");
-  for (const { id, title, price, descriptions, category } of res.data) {
+  for (const { id, title, price, descriptions, category ,likeCount} of res.data) {
     const fragItem = document.importNode(templates.manageItem, true);
-    fragItem.querySelector(".item-title").textContent = title;
+    fragItem.querySelector(".item-title").textContent = title
+    fragItem.querySelector(".item-price").textContent = price
+    fragItem.querySelector('.item-category').textContent = category
+    fragItem.querySelector('.item-like').textContent = likeCount
     fragItem
       .querySelector(".item-delete")
       .addEventListener("click", async e => {
-        // 삭제는 되는데 에러발생... 왜일까
         const res = await mallAPI.delete(`/items/${id}`);
       });
     fragItem.querySelector(".item-edit").addEventListener("click", e => {

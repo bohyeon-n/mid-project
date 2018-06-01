@@ -5,11 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>중간 프로젝트 템플릿</title>
+  <title>shopping Mall</title>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
     crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
   <link rel="stylesheet" href="./index.scss">
+  <link rel="icon" type="image/png" href="https://cdn.glitch.com/0f15b7fc-72a3-4ed2-a6f9-6a5e9b5f52cb%2Ffavicon%20(2).ico?1527814956751">
 </head>
 
 <body>
@@ -18,7 +19,7 @@
     <header class="header">
       <nav class="navbar is-transparent">
         <div class="navbar-brand">
-          <img src="#" alt="#">
+          <!-- <img src="#" alt="#"> -->
           <div class="navbar-burger burger" data-target="navbarExampleTransparentExample">
             <span></span>
             <span></span>
@@ -58,7 +59,7 @@
             <a class="navbar-item member__logout ">
               로그아웃
             </a>
-            <a class="navbar-item member__join">
+            <a class="navbar-item  member__join">
               회원가입
             </a>
             <a class="navbar-item member__bag">
@@ -86,7 +87,7 @@
 
     <div class="container">
       <h1 class="title"></h1>
- 
+
 
       <div class="root">
 
@@ -94,18 +95,7 @@
     </div>
 
   </div>
-  <!-- footer -->
-  <!-- <footer class="footer">
-      <address class="address">
-        <span>성남시 분당구 불곡남로</span>
-        <span>전화:
-          <a href="tel:010-1234-1234">101-1234-1234</a>
-        </span>
-        <span>이메일:
-          <a href="mailto:goosee115@gmail.com?subject=문의사항">goosee115@gmail.com</a>
-        </span>
-      </address>
-    </footer> -->
+
 
 
 
@@ -206,12 +196,11 @@
   <!-- 메인 화면 template -->
 
   <template id="list">
-    <div class="alert"></div>
-      
-      <button class="latest">최신순</button>
-      <button class="sortedPriceAsc">낮은가격순</button>
-      <button class="sortedPriceDesc">높은가격순</button>
-      <button class="bestAsc">인기순</button>
+
+    <button class="latest button is-small">최신순</button>
+    <button class="sortedPriceAsc button is-small">낮은가격순</button>
+    <button class="sortedPriceDesc button is-small">높은가격순</button>
+    <button class="bestAsc button is-small">인기순</button>
 
     <div class="columns list__columns">
     </div>
@@ -222,19 +211,29 @@
       <figure class="image">
         <img class="item__img img" src="#">
       </figure>
-      <div class="item__title">좋은옷</div>
-      <div class="item__price">10000</div>
-      <button class="like">찜하기</button>
-      <button class="buying">구매하기</button>
-      <button class="inBag">장바구니담기</button>
+      <div class="item-align">
+        <div class="item__title">좋은옷</div>
+        <div class="item__price">10000</div>
+
+      </div>
+      <div class="item-align-btn">
+
+        <button class="like button">찜하기</button>
+        <button class="buying button">구매하기</button>
+        <button class="inBag button">장바구니담기</button>
+      </div>
     </div>
   </template>
 
 
   <template id="totalPrice">
-    <div class="total__title">TOTAL</div>
-    <div class="total"></div>
-    <button class="buy">주문하기</button>
+    <div class="box">
+      <div class="totalPrice">
+        <div class="total__title">TOTAL: </div>
+        <div class="total"></div>
+        <button class="buy button">주문하기</button>
+      </div>
+    </div>
   </template>
 
   <!-- 카테고리별 화면/메인화면으로 함-->
@@ -265,8 +264,16 @@
   </template>
 
   <template id="detailBody">
-    <img src="#" class="detail__img image is-1by1">
-    <div class="detail__body"></div>
+    <div class="detail-align">
+      <div class="detail-img">
+        
+        <img src="#" class="detail__img image is-1by1">
+      </div>
+      <div class="detail-body">
+
+        <div class="detail__body"></div>
+      </div>
+    </div>
   </template>
 
 
@@ -285,14 +292,14 @@
 
   <!-- 장바구니 -->
   <template id="bag">
-    <div class="columns is-6">
-      <div class="column is-6">
+    <div class="columns">
+      <div class="column is-5">
         <figure class="image bag__img">
           <img class="item__img" id="img" src="#">
         </figure>
       </div>
       <div class="column is-6 ">
-        <button class="delete">삭제하기</button>
+        <button class="delete"></button>
         <div class="align">
           <table>
             <tr>
@@ -329,7 +336,7 @@
         <table>
           <tr>
             <td>
-              <div class="price__title">가격: </div>
+              <div class="price__title">가격:</div>
             </td>
             <td>
 
@@ -338,10 +345,9 @@
           </tr>
           <tr>
             <td>
-              <div class="totalPrice__title">합계: </div>
+              <div class="totalPrice__title">합계:</div>
             </td>
             <td>
-
               <div class="item__totalPrice">total</div>
             </td>
           </tr>
@@ -350,14 +356,22 @@
       </div>
     </div>
   </template>
-
-
+  <template id="simpleList">
+    <div class="alert"></div>
+    <div class="columns list__columns like">
+    </div>
+  </template>
+  <div class="columns list__columns like">
+  </div>
 
   <!-- 마이페이지 -->
   <template id="myPage">
-    <div class="box">
-      <dive class="mypage__message">주문하신 상품입니다.</dive>
-    </div>
+    <a class="box wishlist">내가 찜한 상품 보기</a>
+
+    <dive class="mypage__message">주문하신 상품입니다.</dive>
+
+
+
   </template>
   <template id="myPageItem">
     <div class="level box myPage__box">
@@ -389,7 +403,7 @@
 
   <template id="orderHistoryItem">
     <img class="image is-32x32" src="#">
-    <div class="title"></div>
+    <div class="item__title subtitle"></div>
     <div class="quantity"></div>
     <div class="price"></div>
   </template>
@@ -411,13 +425,17 @@
   </template>
 
   <template id="orderItem">
+    <div class="box">
     <div class="columns">
+      <div class="order-img">
 
-      <img class="item__img  image is-32x32" src="#">
+        <img class="item__img  image is-32x32" src="#">
+      </div>
       <div class="item__title column is-3"></div>
-      <div class="item__quantity column is-3"></div>
+      <div class="item__quantity column is-3 "></div>
       <div class="item__price column is-3"></div>
     </div>
+  </div>
 
   </template>
 
@@ -428,17 +446,21 @@
         <thead>
           <tr>
             <th>상품 이름</th>
+            <th>가격</th>
+            <th>카테고리</th>
+            <th>찜 횟수</th>
             <th>삭제</th>
             <th>수정</th>
-            <th>품절 여부</th>
           </tr>
         </thead>
         <tfoot>
           <tr>
             <th>상품 이름</th>
+            <th>가격</th>
+            <th>카테고리</th>
+            <th>찜 횟수</th>
             <th>삭제</th>
             <th>수정</th>
-            <th>품절 여부</th>
           </tr>
         </tfoot>
         <tbody class="tbody">
@@ -451,23 +473,14 @@
   <template id="manageItem">
     <tr>
       <td class="item-title">title</td>
+      <td class="item-price">가격</td>
+      <td class="item-category">카테고리</td>
+      <td class="item-like">찜 횟수</td>
       <td>
-        <button class="item-delete">삭제</button>
+        <button class="item-delete button">삭제</button>
       </td>
       <td>
-        <button class="item-edit">수정</button>
-      </td>
-      <td class="item-stock">
-        <div class="control">
-          <label class="radio">
-            <form class="stock">
-              <input type="radio" name="answer" value="true"> Yes
-          </label>
-          <label class="radio">
-            <input type="radio" name="answer" value="false"> No
-          </label>
-          </form>
-        </div>
+        <button class="item-edit button">수정</button>
       </td>
     </tr>
   </template>

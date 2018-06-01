@@ -1,67 +1,123 @@
 .notification {
-  position: absolute;
-  top: 0;
-  height: 40vh;
-  top: 20vh;
-  left: 50vh;
-  
+    position: absolute;
+    top: 0;
+    height: 40vh;
+    top: 20vh;
+    left: 50vh;
 }
 
 .list__columns {
-  flex-wrap: wrap;
+    flex-wrap: wrap;
 }
+
 .login {
-  &__alert {
-    color: white;
-  }
-  &__message {
-    color: white;
-  }
+    &__alert {
+        color: white;
+    }
+    &__message {
+        color: white;
+    }
 }
+
 .align {
-  display: felx;
-  flex-direction: column;
+    display: felx;
+    flex-direction: column;
 }
 
 .myPage__img {
-  width:3rem;
+    width: 3rem;
 }
+
 .main__img {
-  width: 5rem;
+    width: 5rem;
 }
+
 .detail .level-left {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
+
 .myPage__box {
-  width: 50%;
+    width: 50%;
 }
+
 .bag__img {
-
-  width: 4rem;
+    width: 4rem;
 }
-
 
 .member {
-    &__login, &__join {
-      .authed & {
-        display: none;
-      }
+    &__login,
+    &__join {
+        .authed & {
+            display: none;
+        }
     }
-   &__logout, &__myPage {
-     display: none;
-     .authed & {
-       display: inline-block;
-     }
-   }
-   &__admin {
-     display: none;
-     .admin & {
-       display: inline-block;
-     }
-   }
+    &__logout,
+    &__myPage {
+        align-items: cetner;
+        display: none;
+        .authed & {
+            display: inline-block;
+            display: flex;
+            align-items: center;
+        }
+    }
+    &__admin {
+        align-items: center;
+        display: none;
+        .admin & {
+            display: inline-block;
+            display: flex;
+            align-items: center;
+        }
+    }
 }
 
-.image.is-1by1, .image.is-square {
-  padding-top: 0
+.image.is-1by1,
+.image.is-square {
+    padding-top: 0;
+}
+.column.is-5 {
+  display: flex;
+  justify-content: center;
+}
+
+
+.totalPrice {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  .total {
+    padding-right: 3rem;
+  }
+}
+
+.detail-align {
+    display: flex;
+    
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.detail-img {
+    width: 70%;
+}
+.detail-body {
+    width: 70%;
+}
+.item-align {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.item-align-btn {
+    display: flex;
+    justify-content: space-around;
+}
+.button {
+    padding: 0.5 0 0.5 0 
+}
+.order-img {
+    display: flex;
+    align-items: center;
 }
