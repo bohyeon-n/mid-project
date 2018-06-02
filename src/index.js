@@ -57,7 +57,8 @@ document.querySelector(".member__login").addEventListener("click", e => {
 document.querySelector(".member__logout").addEventListener("click", e => {
   logout();
 });
-// 새로고침 시에 로그인 했는지 확인하는
+
+// 새로고침 시에 로그인 했는지 확인 하기
 if (localStorage.getItem("token")) {
   const token = localStorage.getItem("token");
   login(token);
@@ -187,7 +188,7 @@ async function buyNow(id, title, descriptions, price) {
     myPage();
   });
   render(frag);
-  title('주문서 작성')
+  title("주문서 작성");
 }
 
 // 디테일 페이지
@@ -369,7 +370,7 @@ async function bagPage() {
         bagPage();
       });
       frag.querySelector(".item__title").textContent = item.title;
-      totalPrice += Number(item.price * quantity);
+      totalPrice += item.price * quantity;
       frag.querySelector(".item__price").textContent = item.price;
       quantityEl.value = quantity;
       frag.querySelector(".item__totalPrice").textContent =
@@ -386,7 +387,7 @@ async function bagPage() {
     const totalFrag = document.importNode(templates.totalPrice, true);
     totalFrag.querySelector(".total").textContent = totalPrice;
     totalFrag.querySelector(".buy").addEventListener("click", e => {
-      console.log(`item:   ${res.data[0].item.descriptions[0].img}`)
+      console.log(`item:   ${res.data[0].item.descriptions[0].img}`);
       orderPage(res.data, totalPrice);
     });
 
@@ -401,8 +402,8 @@ async function orderPage(res, totalPrice) {
   console.log("totalprice: " + totalPrice);
   const frag = document.importNode(templates.order, true);
   const orderList = frag.querySelector(".order-list");
-  const item = []
-  console.log(`length: ${res.length}`)
+  const item = [];
+  console.log(`length: ${res.length}`);
 
   for (let i = 0; i < res.length; i++) {
     const itemFrag = document.importNode(templates.orderItem, true);
@@ -431,7 +432,7 @@ async function orderPage(res, totalPrice) {
       total: totalPrice,
       items: item
     };
-    console.log(payload)
+    console.log(payload);
     const orderRes = await mallAPI.post("/orderHistories", payload);
 
     //주문 완료 시 장바구니 비워주기
@@ -455,9 +456,9 @@ async function wishlistPage() {
   const userId = localStorage.getItem("userId");
   const listFrag = document.importNode(templates.simpleList, true);
   const res = await mallAPI.get(`/likes?userId=${userId}&_expand=item`);
-  console.log(res.data)
+  console.log(res.data);
   if (res.data[0].length === 0) {
-    alert('위시 리스트에 없다.')
+    alert("위시 리스트에 없다.");
   }
   for (const { item, id } of res.data) {
     const frag = document.importNode(templates.itemEl, true);
@@ -476,14 +477,14 @@ async function wishlistPage() {
       const deleteres = await mallAPI.delete(`/likes/${id}`);
       wishlistPage();
     });
-    frag.querySelector('.inBag').addEventListener('click', async e => {
-      isOverlapItem(item.id)
-      const deleteRes = await mallAPI.delete(`/likes/${id}`)
-    })
-    frag.querySelector('.buying').addEventListener('click', async e => {
-      buyNow(item.id, item.titl, item.descriptions, item.price)
-      console.log(item.id, item.title, item.descriptions, item.price)
-    })
+    frag.querySelector(".inBag").addEventListener("click", async e => {
+      isOverlapItem(item.id);
+      const deleteRes = await mallAPI.delete(`/likes/${id}`);
+    });
+    frag.querySelector(".buying").addEventListener("click", async e => {
+      buyNow(item.id, item.titl, item.descriptions, item.price);
+      console.log(item.id, item.title, item.descriptions, item.price);
+    });
     listFrag.appendChild(frag);
   }
   render(listFrag);
@@ -525,22 +526,26 @@ async function myPage() {
 }
 
 async function orderHistoryPage(name, created, total, items, id, address, tel) {
-  console.log(name, created, total, items, id, address, tel)
-  console.log(address)
-  const frag = document.importNode(templates.orderHistory, true)
-  frag.querySelector(".date").textContent = created
-  frag.querySelector(".total").textContent = total
-  frag.querySelector(".name").textContent = name
-  frag.querySelector(".address").textContent = address
-  frag.querySelector(".phone").textContent = tel
-  const fragList = frag.querySelector(".orderHistories__list")
+  console.log(name, created, total, items, id, address, tel);
+  console.log(address);
+  const frag = document.importNode(templates.orderHistory, true);
+  frag.querySelector(".date").textContent = created;
+  frag.querySelector(".total").textContent = total;
+  frag.querySelector(".name").textContent = name;
+  frag.querySelector(".address").textContent = address;
+  frag.querySelector(".phone").textContent = tel;
+  const fragList = frag.querySelector(".orderHistories__list");
   for (let i = 0; i < items.length; i++) {
-    const itemFrag = document.importNode(templates.orderHistoryItem, true)
+    const itemFrag = document.importNode(templates.orderHistoryItem, true);
     itemFrag.querySelector(".image").src = items[i].itemImg;
-    itemFrag.querySelector(".item__title").textContent = `상품: ${items[i].title}`
-    itemFrag.querySelector(".quantity").textContent = `주문수량: ${items[i].quantity}`
-    itemFrag.querySelector(".price").textContent = `가격: ${items[i].price}`
-    fragList.appendChild(itemFrag)
+    itemFrag.querySelector(".item__title").textContent = `상품: ${
+      items[i].title
+    }`;
+    itemFrag.querySelector(".quantity").textContent = `주문수량: ${
+      items[i].quantity
+    }`;
+    itemFrag.querySelector(".price").textContent = `가격: ${items[i].price}`;
+    fragList.appendChild(itemFrag);
   }
   render(frag);
   title("주문 내역");
@@ -551,13 +556,12 @@ async function orderHistoryPage(name, created, total, items, id, address, tel) {
 // 상품등록 임시로 만들기
 async function addItem() {
   const frag = document.importNode(templates.regist, true);
-
   frag.querySelector(".regist__form").addEventListener("submit", async e => {
     e.preventDefault();
     const payload = {
       category: e.target.elements.category.value,
       title: e.target.elements.title.value,
-      price: e.target.elements.price.value,
+      price: Number(e.target.elements.price.value),
       descriptions: [
         {
           img: e.target.elements.mainImg.value,
@@ -574,13 +578,11 @@ async function addItem() {
     const res = await mallAPI.post("/items", payload);
     addItem();
   });
-
   render(frag);
 }
 
 async function editItem(id, title, price, descriptions, category) {
   const frag = document.importNode(templates.regist, true);
-
   frag.querySelector(".category").value = category;
   frag.querySelector(".title").value = title;
   frag.querySelector(".price").value = price;
@@ -593,7 +595,7 @@ async function editItem(id, title, price, descriptions, category) {
     const payload = {
       category: e.target.elements.category.value,
       title: e.target.elements.title.value,
-      price: e.target.elements.price.value,
+      price: Number(e.target.elements.price.value),
       descriptions: [
         {
           img: e.target.elements.mainImg.value,
@@ -623,12 +625,19 @@ async function manageItem() {
   });
   const tbodyEl = frag.querySelector(".tbody");
   const res = await mallAPI.get("/items?_sort=id&_order=desc");
-  for (const { id, title, price, descriptions, category ,likeCount} of res.data) {
+  for (const {
+    id,
+    title,
+    price,
+    descriptions,
+    category,
+    likeCount
+  } of res.data) {
     const fragItem = document.importNode(templates.manageItem, true);
-    fragItem.querySelector(".item-title").textContent = title
-    fragItem.querySelector(".item-price").textContent = price
-    fragItem.querySelector('.item-category').textContent = category
-    fragItem.querySelector('.item-like').textContent = likeCount
+    fragItem.querySelector(".item-title").textContent = title;
+    fragItem.querySelector(".item-price").textContent = price;
+    fragItem.querySelector(".item-category").textContent = category;
+    fragItem.querySelector(".item-like").textContent = likeCount;
     fragItem
       .querySelector(".item-delete")
       .addEventListener("click", async e => {
@@ -642,3 +651,29 @@ async function manageItem() {
   render(frag);
   title("관리자 페이지");
 }
+
+// 검색기능
+document.querySelector(".search").addEventListener("submit", async e => {
+  e.preventDefault();
+  const text = e.target.elements.search.value.trim().split(" ");
+  console.log(text);
+  const obj = {};
+  const res = await mallAPI.get("/items");
+  for (const { title, id } of res.data) {
+    let slicedTitle = title.trim().split(" ");
+    console.log(title);
+    for (let i = 0; i < text.length; i++) {
+      for (let j = 0; j < slicedTitle.length; j++) {
+        if (text[i] === slicedTitle[j]) {
+          if (obj[id]) {
+            ++obj[id];
+          } else {
+            obj[id] = 1;
+          }
+        }
+      }
+    }
+  }
+  console.log(obj);
+});
+
