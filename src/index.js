@@ -655,25 +655,13 @@ async function manageItem() {
 // 검색기능
 document.querySelector(".search").addEventListener("submit", async e => {
   e.preventDefault();
-  const text = e.target.elements.search.value.trim().split(" ");
-  console.log(text);
-  const obj = {};
-  const res = await mallAPI.get("/items");
-  for (const { title, id } of res.data) {
-    let slicedTitle = title.trim().split(" ");
-    console.log(title);
-    for (let i = 0; i < text.length; i++) {
-      for (let j = 0; j < slicedTitle.length; j++) {
-        if (text[i] === slicedTitle[j]) {
-          if (obj[id]) {
-            ++obj[id];
-          } else {
-            obj[id] = 1;
-          }
-        }
-      }
+  const inputText = (e.target.elements.search.value).replace(/\s/g," ")
+  const res = await mallAPI.get('/items')
+  const itemRes = res.data.filter(res => {
+    if(res.title.replace(/\s/g," ").match(inputText)) {
+      return true
     }
-  }
-  console.log(obj);
+  })
+  console.log(itemRes)
 });
 
