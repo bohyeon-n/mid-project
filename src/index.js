@@ -420,7 +420,7 @@ async function orderPage(res, totalPrice) {
       title: res[i].item.title,
       itemImg: res[i].item.descriptions[0].img,
       itemId: res[i].item.id,
-      price: res[i].price,
+      price: res[i].item.price,
       quantity: res[i].quantity
     });
     orderList.appendChild(itemFrag);
@@ -437,6 +437,7 @@ async function orderPage(res, totalPrice) {
       total: totalPrice,
       items: item
     };
+    console.log(item)
     console.log(payload);
     const orderRes = await mallAPI.post("/orderHistories", payload);
 
@@ -534,11 +535,11 @@ async function orderHistoryPage(name, created, total, items, id, address, tel) {
   console.log(name, created, total, items, id, address, tel);
   console.log(address);
   const frag = document.importNode(templates.orderHistory, true);
-  frag.querySelector(".date").textContent = created;
-  frag.querySelector(".total").textContent = total;
-  frag.querySelector(".name").textContent = name;
-  frag.querySelector(".address").textContent = address;
-  frag.querySelector(".phone").textContent = tel;
+  frag.querySelector(".date").textContent = `주문 일자: ${created}`;
+  frag.querySelector(".total").textContent = `합계: ${total}`;
+  frag.querySelector(".name").textContent = `주문자: ${name}`;
+  frag.querySelector(".address").textContent = `주소: ${address}`;
+  frag.querySelector(".phone").textContent = `연락처: ${tel}`;
   const fragList = frag.querySelector(".orderHistories__list");
   for (let i = 0; i < items.length; i++) {
     const itemFrag = document.importNode(templates.orderHistoryItem, true);

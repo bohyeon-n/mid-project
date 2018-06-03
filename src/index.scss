@@ -4,6 +4,10 @@
     height: 40vh;
     top: 20vh;
     left: 50vh;
+    display: flex;
+    align-items: center; 
+    flex-direction: column;
+    justify-content: center;
 }
 
 .list__columns {
@@ -120,4 +124,9 @@
 .order-img {
     display: flex;
     align-items: center;
+}
+
+.goBag-btn {
+    display: flex;
+    padding-top: 3rem;
 }

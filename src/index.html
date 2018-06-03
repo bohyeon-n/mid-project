@@ -72,7 +72,7 @@
               관리하기
             </a>
             <form class=" navbar-item search">
-              <input type="search" name="search" required placeholder="검색어를 입력하세요">
+              <input type="search" class="input" name="search" required placeholder="검색어를 입력하세요">
               <button type="submit" class="search-btn button">검색</button>
             </form>
           </div>
@@ -283,8 +283,11 @@
     <div class="notification">
       <button class="delete"></button>
       장바구니로 이동하시겠습니까?
-      <button type="button" class="toBag button">장바구니로 이동</button>
-      <button type="button" class="continue button">쇼핑계속 하기</button>
+      <div class="goBag-btn">
+        
+        <button type="button" class="toBag button">장바구니로 이동</button>
+        <button type="button" class="continue button">쇼핑계속 하기</button>
+      </div>
     </div>
   </template>
 
@@ -440,7 +443,7 @@
   </template>
 
   <template id="administrator">
-    <button class="addItem">상품 등록하기</button>
+    <button class="addItem button">상품 등록하기</button>
     <div class="manageItem">
       <table class="table">
         <thead>
