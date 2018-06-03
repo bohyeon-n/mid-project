@@ -218,6 +218,44 @@ async function detailPage(id, title, descriptions, price) {
   console.log(title, descriptions, price);
 }
 
+function itemRender(res, list) {
+  for (const { id, title, descriptions, price, likeCount } of res) {
+    const frag = document.importNode(templates.itemEl, true);
+    frag.querySelector(".item__title").textContent = title;
+    frag.querySelector(".item__img").src = descriptions[0].img;
+    frag.querySelector(".like").addEventListener("click", async e => {
+      console.log("sldkfj");
+      const userId = localStorage.getItem("userId");
+      const res = await mallAPI.get(`/likes?userId=${userId}&itemId=${id}`);
+      if (res.data.length === 0) {
+        const payload = {
+          userId: userId,
+          itemId: id,
+          created: new Date()
+        };
+        const patchPayload = {
+          likeCount: likeCount + 1
+        };
+        const likesRes = await mallAPI.post("/likes", payload);
+        const likeCountRes = await mallAPI.patch(`items/${id}`, patchPayload);
+      }
+    });
+    frag.querySelector(".image").addEventListener("click", e => {
+      detailPage(id, title, descriptions, price);
+    });
+    frag.querySelector(".item__price").textContent = price;
+  
+    frag.querySelector(".inBag").addEventListener("click", async e => {
+      isOverlapItem(id);
+    });
+    frag.querySelector(".buying").addEventListener("click", e => {
+      buyNow(id, title, descriptions, price);
+    });
+    list.appendChild(frag);
+  }
+
+}
+
 // 상품 메인 페이지
 async function mainPage(category = "all", sort = "id", order = "desc") {
   const listFrag = document.importNode(templates.list, true);
@@ -245,40 +283,7 @@ async function mainPage(category = "all", sort = "id", order = "desc") {
     mainPage((category = `${category}`), (sort = "likeCount"), (order = "asc"));
   });
   const res = await mallAPI.get(url);
-  for (const { id, title, descriptions, price, likeCount } of res.data) {
-    const frag = document.importNode(templates.itemEl, true);
-    frag.querySelector(".item__title").textContent = title;
-    frag.querySelector(".item__img").src = descriptions[0].img;
-    frag.querySelector(".like").addEventListener("click", async e => {
-      console.log("sldkfj");
-      const userId = localStorage.getItem("userId");
-      const res = await mallAPI.get(`/likes?userId=${userId}&itemId=${id}`);
-      if (res.data.length === 0) {
-        const payload = {
-          userId: userId,
-          itemId: id,
-          created: new Date()
-        };
-        const patchPayload = {
-          likeCount: likeCount + 1
-        };
-        const likesRes = await mallAPI.post("/likes", payload);
-        const likeCountRes = await mallAPI.patch(`items/${id}`, patchPayload);
-      }
-    });
-    frag.querySelector(".image").addEventListener("click", e => {
-      detailPage(id, title, descriptions, price);
-    });
-    frag.querySelector(".item__price").textContent = price;
-
-    frag.querySelector(".inBag").addEventListener("click", async e => {
-      isOverlapItem(id);
-    });
-    frag.querySelector(".buying").addEventListener("click", e => {
-      buyNow(id, title, descriptions, price);
-    });
-    list.appendChild(frag);
-  }
+  itemRender(res.data,list)
   render(listFrag);
 }
 
@@ -662,6 +667,12 @@ document.querySelector(".search").addEventListener("submit", async e => {
       return true
     }
   })
-  console.log(itemRes)
+  const listFrag = document.importNode(templates.simpleList, true);
+  const list = listFrag.querySelector(".columns")
+  listFrag.querySelector('.alert').textContent = `${itemRes.length}개의 상품이 검색되었습니다.`
+  itemRender(itemRes, list)
+  render(listFrag)
+  title('')
 });
+
 
